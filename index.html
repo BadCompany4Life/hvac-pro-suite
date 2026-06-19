@@ -30,6 +30,8 @@
         .data-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.95rem; border-bottom: 1px dashed var(--border); }
         .data-row:last-child { border-bottom: none; }
         .val { font-weight: bold; color: var(--success); font-size: 1.15rem; }
+        .action-btn { background-color: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.5px; width: 100%; display: block; }
+        .action-btn:hover { background-color: #e05e00; }
         .code-box { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; background: var(--bg-main); padding: 12px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px; }
     </style>
 </head>
@@ -40,15 +42,17 @@
         <h1>ProTech <span>HVAC Master Suite</span></h1>
     </header>
 
+    <button class="action-btn" onclick="runAllCalculations()">⚡ Calculate System Properties</button>
+
     <!-- MODULE 1 -->
     <div class="section-title">1. Psychrometrics Field Calculator</div>
     <div class="form-row">
         <label>Dry Bulb Temperature</label>
-        <div class="input-group"><input type="number" id="dbTemp" value="75" oninput="runAllCalculations()"><span class="unit">°F</span></div>
+        <div class="input-group"><input type="number" id="dbTemp" value="75"><span class="unit">°F</span></div>
     </div>
     <div class="form-row">
         <label>Relative Humidity</label>
-        <div class="input-group"><input type="number" id="rhPct" value="50" oninput="runAllCalculations()"><span class="unit">% RH</span></div>
+        <div class="input-group"><input type="number" id="rhPct" value="50"><span class="unit">% RH</span></div>
     </div>
     <div class="results-block">
         <div class="data-row"><span>Dew Point Target:</span><span class="val" id="resDewPoint">--</span></div>
@@ -60,11 +64,11 @@
     <div class="section-title">2. AC Load Tonnage Estimator</div>
     <div class="form-row">
         <label>Area Floor Space</label>
-        <div class="input-group"><input type="number" id="spaceSqFt" value="1500" oninput="runAllCalculations()"><span class="unit">Sq Ft</span></div>
+        <div class="input-group"><input type="number" id="spaceSqFt" value="1500"><span class="unit">Sq Ft</span></div>
     </div>
     <div class="form-row">
         <label>Facility Classification</label>
-        <select id="buildingType" onchange="runAllCalculations()">
+        <select id="buildingType">
             <option value="office">Commercial Office Space</option>
             <option value="industrial">Industrial Plant Floor</option>
             <option value="server">Data Center Hub</option>
@@ -73,7 +77,7 @@
     </div>
     <div class="form-row">
         <label>Insulation Efficiency Profile</label>
-        <select id="insulationProfile" onchange="runAllCalculations()">
+        <select id="insulationProfile">
             <option value="none">No Insulation (Bare Outer Shell)</option>
             <option value="walls_ceilings">Complete Insulation (Walls & Ceilings)</option>
             <option value="walls_only">Partial Insulation (Walls Only)</option>
@@ -89,11 +93,11 @@
     <div class="section-title">3. Ductulator Friction Sizer</div>
     <div class="form-row">
         <label>Required Airflow Volume</label>
-        <div class="input-group"><input type="number" id="ductCfm" value="1200" oninput="runAllCalculations()"><span class="unit">CFM</span></div>
+        <div class="input-group"><input type="number" id="ductCfm" value="1200"><span class="unit">CFM</span></div>
     </div>
     <div class="form-row">
         <label>Design Friction Rate</label>
-        <div class="input-group"><input type="number" id="friction" value="0.10" step="0.01" oninput="runAllCalculations()"><span class="unit">in. wg</span></div>
+        <div class="input-group"><input type="number" id="friction" value="0.10" step="0.01"><span class="unit">in. wg</span></div>
     </div>
     <div class="results-block">
         <div class="data-row"><span>Round Duct Diameter:</span><span class="val" id="resRoundDuct">--</span></div>
@@ -118,62 +122,69 @@
 
 <script>
 function runAllCalculations() {
+    // --- MODULE 1: PSYCH ENCAPSULATED CALCULATOR ---
     try {
-        // 1. PSYCH MASTER CALCULATIONS
-        const dbF = parseFloat(document.getElementById('dbTemp').value);
-        const rh = parseFloat(document.getElementById('rhPct').value);
+        const dbTempEl = document.getElementById('dbTemp');
+        const rhPctEl = document.getElementById('rhPct');
         
-        if (!isNaN(dbF) && !isNaN(rh) && rh > 0 && rh <= 100) {
-            const dbC = (dbF - 32) * 5 / 9;
-            const es = 0.61078 * Math.exp((17.27 * dbC) / (237.7 + dbC));
-            const e = (rh / 100) * es;
-            const alpha = ((17.27 * dbC) / (237.7 + dbC)) + Math.log(rh / 100);
-            const dpF = ((237.7 * alpha) / (17.27 - alpha) * 9 / 5) + 32;
-            const grains = 0.62194 * (e / (101.325 - e)) * 7000;
-
-            document.getElementById('resDewPoint').innerText = dpF.toFixed(1) + " °F";
-            document.getElementById('resGrains').innerText = grains.toFixed(1) + " GPP";
-            document.getElementById('resVapor').innerText = (e * 0.295333).toFixed(3) + " inHg";
-        } else {
-            document.getElementById('resDewPoint').innerText = "--";
-            document.getElementById('resGrains').innerText = "--";
-            document.getElementById('resVapor').innerText = "--";
-        }
-
-        // 2. LOAD TONNAGE CALCULATIONS
-        const sqFt = parseFloat(document.getElementById('spaceSqFt').value);
-        const type = document.getElementById('buildingType').value;
-        const profile = document.getElementById('insulationProfile').value;
+        let dbF = dbTempEl ? parseFloat(dbTempEl.value) : 75;
+        let rh = rhPctEl ? parseFloat(rhPctEl.value) : 50;
         
-        if (!isNaN(sqFt) && sqFt > 0) {
-            let base = 400;
-            if (type === 'industrial') base = 250;
-            if (type === 'server') base = 100;
-            if (type === 'residential') base = 500;
+        if (isNaN(dbF)) dbF = 75;
+        if (isNaN(rh) || rh <= 0 || rh > 100) rh = 50;
 
-            let mult = 1.0;
-            if (profile === 'none') mult = 1.45;
-            if (profile === 'walls_only') mult = 1.15;
-            if (profile === 'attic_only') mult = 1.25;
-            if (profile === 'walls_ceilings') mult = 0.90;
+        const dbC = (dbF - 32) * 5 / 9;
+        const es = 0.61078 * Math.exp((17.27 * dbC) / (237.7 + dbC));
+        const e = (rh / 100) * es;
+        const alpha = ((17.27 * dbC) / (237.7 + dbC)) + Math.log(rh / 100);
+        const dpF = ((237.7 * alpha) / (17.27 - alpha) * 9 / 5) + 32;
+        const grains = 0.62194 * (e / (101.325 - e)) * 7000;
 
-            const tons = (sqFt / base) * mult;
-            document.getElementById('resTons').innerText = tons.toFixed(2) + " Tons";
-            document.getElementById('resCfm').innerText = Math.round(tons * 400).toLocaleString() + " CFM";
-        } else {
-            document.getElementById('resTons').innerText = "--";
-            document.getElementById('resCfm').innerText = "--";
-        }
+        document.getElementById('resDewPoint').innerText = isNaN(dpF) ? "--" : dpF.toFixed(1) + " °F";
+        document.getElementById('resGrains').innerText = isNaN(grains) ? "--" : grains.toFixed(1) + " GPP";
+        document.getElementById('resVapor').innerText = isNaN(e) ? "--" : (e * 0.295333).toFixed(3) + " inHg";
+    } catch (err) {
+        console.log("Psych calculation isolated notice: " + err.message);
+    }
 
-        // 3. DUCTULATOR CALCULATIONS
-        const cfm = parseFloat(document.getElementById('ductCfm').value);
-        const friction = parseFloat(document.getElementById('friction').value);
-        
-        if (!isNaN(cfm) && !isNaN(friction) && cfm > 0 && friction > 0) {
-            const dRound = 2.42 * Math.pow(cfm, 0.44) * Math.pow(friction, -0.22) * 0.1;
-            let wRect = Math.pow(dRound, 5) / 32000;
-            wRect = Math.pow(wRect, 0.125) * 2;
-            const vel = cfm / ((Math.PI * Math.pow(dRound / 12, 2)) / 4);
+    // --- MODULE 2: AC LOAD ENCAPSULATED ESTIMATOR ---
+    try {
+        const spaceSqFtEl = document.getElementById('spaceSqFt');
+        const buildingTypeEl = document.getElementById('buildingType');
+        const insulationProfileEl = document.getElementById('insulationProfile');
+
+        let sqFt = spaceSqFtEl ? parseFloat(spaceSqFtEl.value) : 1500;
+        let type = buildingTypeEl ? buildingTypeEl.value : 'office';
+        let profile = insulationProfileEl ? insulationProfileEl.value : 'none';
+
+        if (isNaN(sqFt) || sqFt <= 0) sqFt = 1500;
+
+        let base = 400;
+        if (type === 'industrial') base = 250;
+        if (type === 'server') base = 100;
+        if (type === 'residential') base = 500;
+
+        let mult = 1.0;
+        if (profile === 'none') mult = 1.45;
+        if (profile === 'walls_only') mult = 1.15;
+        if (profile === 'attic_only') mult = 1.25;
+        if (profile === 'walls_ceilings') mult = 0.90;
+
+        const tons = (sqFt / base) * mult;
+        document.getElementById('resTons').innerText = isNaN(tons) ? "--" : tons.toFixed(2) + " Tons";
+        document.getElementById('resCfm').innerText = isNaN(tons) ? "--" : Math.round(tons * 400).toLocaleString() + " CFM";
+    } catch (err) {
+        console.log("Load calculation isolated notice: " + err.message);
+    }
+
+    // --- MODULE 3: DUCTULATOR ENCAPSULATED FRICTION SIZER ---
+    try {
+        const ductCfmEl = document.getElementById('ductCfm');
+        const frictionEl = document.getElementById('friction');
+
+        let cfm = ductCfmEl ? parseFloat(ductCfmEl.value) : 1200;
+        let friction = frictionEl ? parseFloat(frictionEl.value) : 0.10;
+
 
             document.getElementById('resRoundDuct').innerText = dRound.toFixed(1) + " in.";
             document.getElementById('resRectDuct').innerText = Math.ceil(wRect) + " in. x 10 in.";
