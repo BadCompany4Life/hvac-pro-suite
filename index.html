@@ -1,1 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProTech Enterprise HVAC Field Suite</title>
+    <style>
+        :root {
+            --bg-main: #14171c;
+            --bg-card: #1e222b;
+            --bg-input: #282c34;
+            --primary: #ff6b00; /* Safety Orange */
+            --primary-hover: #e05e00;
+            --text-main: #ffffff;
+            --text-muted: #abb2bf;
+            --border: #3f4451;
+            --success: #98c379;
+            --danger: #e06c75;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border);
+            border-top: 6px solid var(--primary);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 650px;
+            padding: 15px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+            margin-bottom: 30px;
+        }
+
+        header {
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        header h1 span {
+            color: var(--primary);
+        }
+
+        .tab-navigation {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .tab-btn {
+            background-color: var(--bg-input);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            flex: 1 1 calc(20% - 5px);
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: var(--text-main);
+            border-color: var(--primary);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .form-row {
+            margin-bottom: 12px;
+        }
+
+        .radio-group {
+            background-color: var(--bg-main);
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            margin-top: 6px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .radio-option:last-child {
+            margin-bottom: 0;
+        }
+
+        .radio-option input[type="radio"] {
+            accent-color: var(--primary);
+            width: 16px;
+            height: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+        }
+
+        input[type="number"], select, input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-main);
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .unit {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 0.85rem;
+            pointer-events: none;
+        }
+
+        .results-block {
+            background-color: var(--bg-main);
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .results-block h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 2px;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 0.95rem;
+        }
+
+        .data-row:not(:last-child) {
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .val {
+            font-weight: bold;
+            color: var(--success);
+        }
+
+        .code-reference-box {
+            background-color: var(--bg-main);
+            border-left: 4px solid var(--primary);
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .code-reference-box h4 {
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .code-reference-box p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .gate-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .gate-content {
+            background-color: var(--bg-card);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255, 107, 0, 0.4);
+        }
+
+        .gate-content h2 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .gate-content p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .gate-btn {
+            background-color: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 8px;
+            width: 100%;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        .bypass-toggle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: underline;
+            cursor: pointer;
+            display: block;
+            margin-top: 15px;
+        }
+
+        .table-scroller {
+            overflow-x: auto;
+            margin-top: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 6px;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            background-color: var(--bg-main);
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>ProTech <span>HVAC Field Suite</span></h1>
+    </header>
+
+    <div class="tab-navigation">
+        <button class="tab-btn active" onclick="switchTab('psych')">Psych</button>
+        <button class="tab-btn" onclick="switchTab('tonnage')">AC Load</button>
+        <button class="tab-btn" onclick="switchTab('duct')">Ductulator</button>
+        <button class="tab-btn" onclick="switchTab('pt')">PT Chart</button>
+        <button class="tab-btn" onclick="switchTab('codes')">Codes</button>
+    </div>
+
+    <!-- TAB 1: PSYCHROMECTRICS -->
+    <div id="psych" class="tab-panel active">
+        <div class="form-row">
+            <label for="dbTemp">Dry Bulb Temperature</label>
+            <div class="input-group">
+                <input type="number" id="dbTemp" value="75" step="0.1">
+                <span class="unit">°F</span>
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="rhPct">Relative Humidity</label>
+            <div class="input-group">
+                <input type="number" id="rhPct" value="50" step="1">
+                <span class="unit">% RH</span>
+            </div>
+        </div>
+        <button class="action-btn" onclick="calculatePsychometrics()">Calculate Properties</button>
+        
+        <div class="results-block">
+            <h3>Calculated Values</h3>
+            <div class="data-row"><span>Dew Point:</span><span class="val" id="resDewPoint">--</span></div>
+            <div class="data-row"><span>Moisture Content:</span><span class="val" id="resGrains">--</span></div>
+            <div class="data-row"><span>Vapor Pressure:</span><span class="val" id="resVapor">--</span></div>
 
