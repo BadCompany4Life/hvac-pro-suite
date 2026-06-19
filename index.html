@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProTech HVAC Field Suite</title>
+    <title>ProTech HVAC Field Tool Suite</title>
     <style>
         :root {
             --bg-main: #14171c;
@@ -14,138 +14,165 @@
             --text-muted: #abb2bf;
             --border: #3f4451;
             --success: #98c379;
-            --danger: #e06c75;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-main); padding: 10px; display: flex; justify-content: center; }
-        .app-container { background-color: var(--bg-card); border: 2px solid var(--border); border-top: 6px solid var(--primary); border-radius: 8px; width: 100%; max-width: 500px; padding: 15px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
-        header { margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; text-align: center; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        .app-container { background-color: var(--bg-card); border: 2px solid var(--border); border-top: 6px solid var(--primary); border-radius: 8px; width: 100%; max-width: 500px; padding: 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); margin-bottom: 20px; }
+        header { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; text-align: center; }
         header h1 span { color: var(--primary); }
-        .tab-navigation { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 15px; }
-        .tab-btn { background-color: var(--bg-input); color: var(--text-muted); border: 1px solid var(--border); padding: 10px 6px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; flex: 1 1 calc(20% - 4px); text-align: center; }
-        .tab-btn.active { background-color: var(--primary); color: var(--text-main); border-color: var(--primary); }
-        .tab-panel { display: none; }
-        .tab-panel.active { display: block; }
+        .section-title { font-size: 1rem; text-transform: uppercase; color: var(--primary); margin: 15px 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 4px; letter-spacing: 0.5px; }
         .form-row { margin-bottom: 12px; }
         label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; color: var(--text-muted); }
         .input-group { position: relative; display: flex; }
-        input[type="number"], select, input[type="text"], input[type="email"] { width: 100%; padding: 12px; background-color: var(--bg-input); border: 1px solid var(--border); border-radius: 4px; color: var(--text-main); font-size: 1rem; font-weight: bold; }
-        .unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-weight: bold; font-size: 0.85rem; }
-        .radio-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; background: var(--bg-main); padding: 10px; border-radius: 4px; border: 1px solid var(--border); }
+        input[type="number"], select { width: 100%; padding: 12px; background-color: var(--bg-input); border: 1px solid var(--border); border-radius: 4px; color: var(--text-main); font-size: 1.1rem; font-weight: bold; }
+        .unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-weight: bold; font-size: 0.9rem; }
+        .radio-group { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; background: var(--bg-main); padding: 10px; border-radius: 4px; border: 1px solid var(--border); }
         .radio-label { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; }
         .radio-label input { width: 18px; height: 18px; accent-color: var(--primary); }
-        .results-block { background-color: var(--bg-main); border-radius: 6px; padding: 12px; margin-top: 15px; border: 1px solid var(--border); }
-        .results-block h3 { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+        .results-block { background-color: var(--bg-main); border-radius: 6px; padding: 12px; margin-top: 10px; border: 1px solid var(--border); }
         .data-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.95rem; border-bottom: 1px dashed var(--border); }
         .data-row:last-child { border-bottom: none; }
-        .val { font-weight: bold; color: var(--success); }
-        .action-btn { background-color: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 12px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px; text-transform: uppercase; font-size: 0.85rem; }
-        .gate-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
-        .gate-content { background-color: var(--bg-card); border: 2px solid var(--primary); border-radius: 8px; width: 100%; max-width: 380px; padding: 20px; text-align: center; }
-        .gate-btn { background-color: var(--primary); color: #fff; border: none; padding: 12px; width: 100%; border-radius: 4px; font-weight: bold; text-transform: uppercase; cursor: pointer; margin-top: 10px; }
-        .bypass-toggle { font-size: 0.75rem; color: var(--text-muted); text-decoration: underline; cursor: pointer; display: block; margin-top: 15px; }
-        .table-scroller { overflow-x: auto; margin-top: 8px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th, td { padding: 8px; border: 1px solid var(--border); text-align: left; }
-        th { background-color: var(--bg-main); color: var(--primary); }
+        .val { font-weight: bold; color: var(--success); font-size: 1.1rem; }
+        .action-btn { background-color: var(--primary); color: #html; color: white; border: none; padding: 14px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.5px; }
+        .action-btn:hover { background-color: #e05e00; }
+        .code-box { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; background: var(--bg-main); padding: 10px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <header>
-        <h1>ProTech <span>HVAC Suite</span></h1>
+        <h1>ProTech <span>HVAC Master Suite</span></h1>
     </header>
 
-    <div class="tab-navigation">
-        <button id="btn-psych" class="tab-btn active" onclick="switchTab('psych')">Psych</button>
-        <button id="btn-tonnage" class="tab-btn" onclick="switchTab('tonnage')">AC Load</button>
-        <button id="btn-duct" class="tab-btn" onclick="switchTab('duct')">Duct</button>
-        <button id="btn-pt" class="tab-btn" onclick="switchTab('pt')">PT Chart</button>
-        <button id="btn-codes" class="tab-btn" onclick="switchTab('codes')">Codes</button>
+    <button class="action-btn" onclick="runAllCalculations()">⚡ Run All Master Calculations</button>
+
+    <!-- MODULE 1 -->
+    <div class="section-title">1. Psychrometrics Field Calculator</div>
+    <div class="form-row">
+        <label>Dry Bulb Temperature</label>
+        <div class="input-group"><input type="number" id="dbTemp" value="75"><span class="unit">°F</span></div>
+    </div>
+    <div class="form-row">
+        <label>Relative Humidity</label>
+        <div class="input-group"><input type="number" id="rhPct" value="50"><span class="unit">% RH</span></div>
+    </div>
+    <div class="results-block">
+        <div class="data-row"><span>Dew Point Target:</span><span class="val" id="resDewPoint">--</span></div>
+        <div class="data-row"><span>Moisture Content:</span><span class="val" id="resGrains">--</span></div>
+        <div class="data-row"><span>Vapor Pressure:</span><span class="val" id="resVapor">--</span></div>
     </div>
 
-    <!-- PSYCH -->
-    <div id="psych" class="tab-panel active">
-        <div class="form-row">
-            <label>Dry Bulb Temperature</label>
-            <div class="input-group"><input type="number" id="dbTemp" value="75"><span class="unit">°F</span></div>
+    <!-- MODULE 2 -->
+    <div class="section-title">2. AC Load Tonnage Estimator</div>
+    <div class="form-row">
+        <label>Area Floor Space</label>
+        <div class="input-group"><input type="number" id="spaceSqFt" value="1500"><span class="unit">Sq Ft</span></div>
+    </div>
+    <div class="form-row">
+        <label>Facility Classification</label>
+        <select id="buildingType">
+            <option value="office">Commercial Office Space</option>
+            <option value="industrial">Industrial Plant Floor</option>
+            <option value="server">Data Center Hub</option>
+            <option value="residential">Standard Residential</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label>Is Structure Insulated?</label>
+        <select id="isInsulated" onchange="toggleInsulationView()">
+            <option value="no">No Insulation</option>
+            <option value="yes">Yes (Insulated Envelope)</option>
+        </select>
+    </div>
+    <div class="form-row" id="insulationBox" style="display: none;">
+        <label>Envelope Options:</label>
+        <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="insType" value="walls_ceilings" checked> Walls and Ceilings</label>
+            <label class="radio-label"><input type="radio" name="insType" value="walls_only"> Walls Only</label>
+            <label class="radio-label"><input type="radio" name="insType" value="attic_only"> Attic / Ceiling Only</label>
         </div>
-        <div class="form-row">
-            <label>Relative Humidity</label>
-            <div class="input-group"><input type="number" id="rhPct" value="50"><span class="unit">% RH</span></div>
-        </div>
-        <button class="action-btn" onclick="calculatePsychometrics()">Calculate Properties</button>
-        <div class="results-block">
-            <h3>Calculated Values</h3>
-            <div class="data-row"><span>Dew Point:</span><span class="val" id="resDewPoint">--</span></div>
-            <div class="data-row"><span>Moisture Content:</span><span class="val" id="resGrains">--</span></div>
-            <div class="data-row"><span>Vapor Pressure:</span><span class="val" id="resVapor">--</span></div>
-        </div>
-        <button class="action-btn" onclick="triggerGate('Psychrometrics Report')">Export Report</button>
+    </div>
+    <div class="results-block">
+        <div class="data-row"><span>Estimated Cooling Load:</span><span class="val" id="resTons">--</span></div>
+        <div class="data-row"><span>Target Airflow Volume:</span><span class="val" id="resCfm">--</span></div>
     </div>
 
-    <!-- LOAD -->
-    <div id="tonnage" class="tab-panel">
-        <div class="form-row">
-            <label>Area Floor Space</label>
-            <div class="input-group"><input type="number" id="spaceSqFt" value="1500"><span class="unit">Sq Ft</span></div>
-        </div>
-        <div class="form-row">
-            <label>Facility Classification</label>
-            <select id="buildingType">
-                <option value="office">Commercial Office</option>
-                <option value="industrial">Industrial Plant Floor</option>
-                <option value="server">Data Center Hub</option>
-                <option value="residential">Standard Residential</option>
-            </select>
-        </div>
-        <div class="form-row">
-            <label>Is Structure Insulated?</label>
-            <select id="isInsulated" onchange="toggleInsulation()">
-                <option value="no">No Insulation</option>
-                <option value="yes">Yes (Insulated Envelope)</option>
-            </select>
-        </div>
-        <div class="form-row" id="insulationBox" style="display: none;">
-            <label>Configurations:</label>
-            <div class="radio-group">
-                <label class="radio-label"><input type="radio" name="insType" value="walls_ceilings" checked> Walls and Ceilings</label>
-                <label class="radio-label"><input type="radio" name="insType" value="walls_only"> Walls Only</label>
-                <label class="radio-label"><input type="radio" name="insType" value="attic_only"> Attic / Ceiling Only</label>
-                <label class="radio-label"><input type="radio" name="insType" value="none"> None</label>
-            </div>
-        </div>
-        <button class="action-btn" onclick="calculateTonnage()">Estimate HVAC Load</button>
-        <div class="results-block">
-            <h3>Required Cooling</h3>
-            <div class="data-row"><span>Estimated Load:</span><span class="val" id="resTons">--</span></div>
-            <div class="data-row"><span>Target Airflow:</span><span class="val" id="resCfm">--</span></div>
-        </div>
-        <button class="action-btn" onclick="triggerGate('AC Tonnage Report')">Export Report</button>
+    <!-- MODULE 3 -->
+    <div class="section-title">3. Ductulator Friction Sizer</div>
+    <div class="form-row">
+        <label>Required Airflow Volume</label>
+        <div class="input-group"><input type="number" id="ductCfm" value="1200"><span class="unit">CFM</span></div>
+    </div>
+    <div class="form-row">
+        <label>Design Friction Rate</label>
+        <div class="input-group"><input type="number" id="friction" value="0.10" step="0.01"><span class="unit">in. wg</span></div>
+    </div>
+    <div class="results-block">
+        <div class="data-row"><span>Round Duct Diameter:</span><span class="val" id="resRoundDuct">--</span></div>
+        <div class="data-row"><span>Rectangular Equivalent (10" H):</span><span class="val" id="resRectDuct">--</span></div>
+        <div class="data-row"><span>Calculated Air Velocity:</span><span class="val" id="resVelocity">--</span></div>
     </div>
 
-    <!-- DUCT -->
-    <div id="duct" class="tab-panel">
-        <div class="form-row">
-            <label>Airflow Volume</label>
-            <div class="input-group"><input type="number" id="ductCfm" value="1200"><span class="unit">CFM</span></div>
-        </div>
-        <div class="form-row">
-            <label>Design Friction</label>
-            <div class="input-group"><input type="number" id="friction" value="0.10" step="0.01"><span class="unit">in. wg</span></div>
-        </div>
-        <button class="action-btn" onclick="calculateDuct()">Size Duct Parameters</button>
-        <div class="results-block">
-            <h3>Duct Sizing</h3>
-            <div class="data-row"><span>Round Diameter:</span><span class="val" id="resRoundDuct">--</span></div>
-            <div class="data-row"><span>Rectangular (10" H):</span><span class="val" id="resRectDuct">--</span></div>
-            <div class="data-row"><span>Velocity:</span><span class="val" id="resVelocity">--</span></div>
-        </div>
-        <button class="action-btn" onclick="triggerGate('Duct Design Report')">Export Report</button>
+    <!-- MODULE 4 -->
+    <div class="section-title">4. Compliance Codes References</div>
+    <div class="code-box">
+        <b style="color:var(--primary)">SMACNA Standards:</b><br>
+        • 2" w.g. Pressure Class: Seal Class C standard mandatory.<br>
+        • Hangers: Max 10-foot intervals on steel ducts.
     </div>
+    <div class="code-box">
+        <b style="color:var(--primary)">California Title 24:</b><br>
+        • Duct Insulation: R-6.0 minimum in conditioned space; R-8.0 in unconditioned area.<br>
+        • Max Allowable Duct Leakage Rate: HERS verified 4% maximum.<br>
+        • Fresh Ventilation Minimum: 15 CFM per occupant.
+    </div>
+</div>
 
-    <!-- PT CHART -->
-    <div id="pt" class="tab-panel">
-        <div class="form-row">
-            <label>Select Refrigerant</label>
+<script>
+function toggleInsulationView() {
+    const box = document.getElementById('insulationBox');
+    const isIns = document.getElementById('isInsulated').value;
+    box.style.display = (isIns === 'yes') ? 'block' : 'none';
+}
+
+function runAllCalculations() {
+    try {
+        // --- 1. PSYCH MASTER ENGINE ---
+        let dbF = parseFloat(document.getElementById('dbTemp').value);
+        let rh = parseFloat(document.getElementById('rhPct').value);
+        if (!isNaN(dbF) && !isNaN(rh)) {
+            let dbC = (dbF - 32) * 5 / 9;
+            let es = 0.61078 * Math.exp((17.27 * dbC) / (237.7 + dbC));
+            let e = (rh / 100) * es;
+            let alpha = ((17.27 * dbC) / (237.7 + dbC)) + Math.log(rh / 100);
+            let dpF = ((237.7 * alpha) / (17.27 - alpha) * 9 / 5) + 32;
+            let grains = 0.62194 * (e / (101.325 - e)) * 7000;
+
+            document.getElementById('resDewPoint').innerText = dpF.toFixed(1) + " °F";
+            document.getElementById('resGrains').innerText = grains.toFixed(1) + " GPP";
+            document.getElementById('resVapor').innerText = (e * 0.295333).toFixed(3) + " inHg";
+        }
+
+        // --- 2. LOAD TONNAGE ENGINE ---
+        let sqFt = parseFloat(document.getElementById('spaceSqFt').value);
+        let type = document.getElementById('buildingType').value;
+        let isIns = document.getElementById('isInsulated').value;
+        if (!isNaN(sqFt) && sqFt > 0) {
+            let base = 400;
+            if (type === 'industrial') base = 250;
+            if (type === 'server') base = 100;
+            if (type === 'residential') base = 500;
+
+            let mult = 1.0;
+            if (isIns === 'no') {
+                mult = 1.45;
+            } else {
+                const rad = document.querySelector('input[name="insType"]:checked');
+                if (rad) {
+                    if (rad.value === 'walls_only') mult = 1.15;
+                    if (rad.value === 'attic_only') mult = 1.25;
+                    if (rad.value === 'walls_ceilings') mult = 0.90;
+                }
+            }
+            let tons = (sqFt / base) * mult;
