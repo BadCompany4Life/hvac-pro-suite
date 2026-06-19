@@ -30,7 +30,7 @@
         .data-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.95rem; border-bottom: 1px dashed var(--border); }
         .data-row:last-child { border-bottom: none; }
         .val { font-weight: bold; color: var(--success); font-size: 1.15rem; }
-        .action-btn { background-color: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.5px; display: block; width: 100%; text-align: center; }
+        .action-btn { background-color: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 1rem; letter-spacing: 0.5px; display: block; text-align: center; box-shadow: 0 4px 15px rgba(255,107,0,0.3); }
         .action-btn:hover { background-color: #e05e00; }
         .code-box { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; background: var(--bg-main); padding: 12px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px; }
         .catalog-viewer { width: 100%; padding: 10px; background: var(--bg-input); color: #fff; border-radius: 4px; border: 1px solid var(--border); margin-top: 5px; font-size: 0.85rem; font-weight: bold; }
@@ -48,11 +48,11 @@
     <div class="section-title">1. Psychrometrics Field Calculator</div>
     <div class="form-row">
         <label>Dry Bulb Temperature</label>
-        <div class="input-group"><input type="number" id="dbTemp" value="75" oninput="runAllCalculations()"><span class="unit">°F</span></div>
+        <div class="input-group"><input type="number" id="dbTemp" value="75"><span class="unit">°F</span></div>
     </div>
     <div class="form-row">
         <label>Relative Humidity</label>
-        <div class="input-group"><input type="number" id="rhPct" value="50" oninput="runAllCalculations()"><span class="unit">% RH</span></div>
+        <div class="input-group"><input type="number" id="rhPct" value="50"><span class="unit">% RH</span></div>
     </div>
     <div class="results-block">
         <div class="data-row"><span>Dew Point Target:</span><span class="val" id="resDewPoint">--</span></div>
@@ -64,11 +64,11 @@
     <div class="section-title">2. AC Load Tonnage Estimator</div>
     <div class="form-row">
         <label>Area Floor Space</label>
-        <div class="input-group"><input type="number" id="spaceSqFt" value="1500" oninput="runAllCalculations()"><span class="unit">Sq Ft</span></div>
+        <div class="input-group"><input type="number" id="spaceSqFt" value="1500"><span class="unit">Sq Ft</span></div>
     </div>
     <div class="form-row">
         <label>Facility Classification</label>
-        <select id="buildingType" onchange="runAllCalculations()">
+        <select id="buildingType">
             <option value="office">Commercial Office Space</option>
             <option value="industrial">Industrial Plant Floor</option>
             <option value="server">Data Center Hub</option>
@@ -77,7 +77,7 @@
     </div>
     <div class="form-row">
         <label>Insulation Efficiency Profile</label>
-        <select id="insulationProfile" onchange="runAllCalculations()">
+        <select id="insulationProfile">
             <option value="none">No Insulation (Bare Outer Shell)</option>
             <option value="walls_ceilings">Complete Insulation (Walls & Ceilings)</option>
             <option value="walls_only">Partial Insulation (Walls Only)</option>
@@ -93,11 +93,11 @@
     <div class="section-title">3. Ductulator Friction Sizer</div>
     <div class="form-row">
         <label>Required Airflow Volume</label>
-        <div class="input-group"><input type="number" id="ductCfm" value="1200" oninput="runAllCalculations()"><span class="unit">CFM</span></div>
+        <div class="input-group"><input type="number" id="ductCfm" value="1200"><span class="unit">CFM</span></div>
     </div>
     <div class="form-row">
         <label>Design Friction Rate</label>
-        <div class="input-group"><input type="number" id="friction" value="0.10" step="0.01" oninput="runAllCalculations()"><span class="unit">in. wg</span></div>
+        <div class="input-group"><input type="number" id="friction" value="0.10" step="0.01"><span class="unit">in. wg</span></div>
     </div>
     <div class="results-block">
         <div class="data-row"><span>Round Duct Diameter:</span><span class="val" id="resRoundDuct">--</span></div>
@@ -105,10 +105,10 @@
         <div class="data-row"><span>Calculated Air Velocity:</span><span class="val" id="resVelocity">--</span></div>
     </div>
 
-    <!-- MAIN SYSTEM UTILITIES INTERACTION -->
-    <button class="action-btn" onclick="exportEngineeringReport()">📥 Export Data Report (.txt)</button>
+    <!-- MAIN INTERACTION TRIGGER FOR THE MANUAL UTILITIES -->
+    <button class="action-btn" onclick="runAllCalculationsAndExport()">⚡ Run Calculations & Export</button>
 
-    <!-- MODULE 4: EXTENDED CATALOG DATA MATRIX -->
+    <!-- MODULE 4: INTERACTIVE CATALOG SYSTEM -->
     <div class="section-title">4. Compliance Engineering Manuals</div>
     
     <div class="code-box">
@@ -139,3 +139,4 @@
 const SMACNA_CATALOG = {
     ch1: "<b>SMACNA Chapter 1 - Material Specifications:</b><br>• For 2\" w.g. static pressure limits, minimum steel gauge for rectangular ducts up to 12\" wide is 26 Gauge.<br>• Ducts 13\" to 30\" wide require a minimum of 24 Gauge thickness structural sheet plates.<br>• Longitudinal seams must be structurally locked via Pittsburgh lock configurations or seam punch joins.",
     ch2: "<b>SMACNA Chapter 2 - Transverse Joint Connections:</b><br>• Flat drive slip connections are permitted for joints up to 20 inches wide at a 2\" w.g. maximum static pressure classification.<br>• T-25 companion flange configurations require 1/2\" bolt anchors at perimeter corner junctions.<br>• Integral flange joints (TDC/TDF specifications) must include matching perimeter gasket seals completely across interface edges.",
+    ch4: "<b>SMACNA Chapter 4 - Flexible Duct Systems:</b><br>• Flexible duct assemblies must be installed in a fully extended structural profile; avoid compression sag exceeding 1/2\" per linear foot.<br>• Minimum structural support hanger strap widths must trace a 1-1/2\" width target minimum across wrap zones.<br>• Centerline wrap radius bends cannot map below one full core duct width diameter size marker profile.",
