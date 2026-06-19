@@ -9,7 +9,7 @@
             --bg-main: #14171c;
             --bg-card: #1e222b;
             --bg-input: #282c34;
-            --primary: #ff6b00; /* Safety Orange */
+            --primary: #ff6b00; 
             --primary-hover: #e05e00;
             --text-main: #ffffff;
             --text-muted: #abb2bf;
@@ -41,7 +41,7 @@
             border-top: 6px solid var(--primary);
             border-radius: 8px;
             width: 100%;
-            max-width: 650px;
+            max-width: 600px;
             padding: 15px;
             box-shadow: 0 12px 32px rgba(0,0,0,0.4);
             margin-bottom: 30px;
@@ -77,10 +77,10 @@
             background-color: var(--bg-input);
             color: var(--text-muted);
             border: 1px solid var(--border);
-            padding: 8px 10px;
+            padding: 8px 12px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: bold;
             text-transform: uppercase;
             flex: 1 1 calc(20% - 5px);
@@ -106,27 +106,28 @@
         }
 
         .radio-group {
-            background-color: var(--bg-main);
-            padding: 12px;
-            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 8px;
+            background: var(--bg-main);
+            padding: 10px;
+            border-radius: 4px;
             border: 1px solid var(--border);
-            margin-top: 6px;
         }
 
-        .radio-option {
+        .radio-label {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 8px;
+            text-transform: none;
+            color: var(--text-main);
+            font-weight: normal;
+            font-size: 0.9rem;
             cursor: pointer;
-            font-size: 0.85rem;
         }
 
-        .radio-option:last-child {
-            margin-bottom: 0;
-        }
-
-        .radio-option input[type="radio"] {
+        .radio-label input {
             accent-color: var(--primary);
             width: 16px;
             height: 16px;
@@ -201,27 +202,6 @@
             color: var(--success);
         }
 
-        .code-reference-box {
-            background-color: var(--bg-main);
-            border-left: 4px solid var(--primary);
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 0 4px 4px 0;
-        }
-
-        .code-reference-box h4 {
-            font-size: 0.85rem;
-            color: var(--primary);
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .code-reference-box p {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
-
         .gate-modal {
             display: none;
             position: fixed;
@@ -245,19 +225,6 @@
             padding: 20px;
             text-align: center;
             box-shadow: 0 0 20px rgba(255, 107, 0, 0.4);
-        }
-
-        .gate-content h2 {
-            font-size: 1.2rem;
-            color: var(--primary);
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .gate-content p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 15px;
         }
 
         .gate-btn {
@@ -357,4 +324,20 @@
             <div class="data-row"><span>Dew Point:</span><span class="val" id="resDewPoint">--</span></div>
             <div class="data-row"><span>Moisture Content:</span><span class="val" id="resGrains">--</span></div>
             <div class="data-row"><span>Vapor Pressure:</span><span class="val" id="resVapor">--</span></div>
+        </div>
+        <button class="action-btn" onclick="triggerGate('Psychrometrics Report')">Export Clean PDF Report</button>
+    </div>
 
+    <!-- TAB 2: TONNAGE ESTIMATOR -->
+    <div id="tonnage" class="tab-panel">
+        <div class="form-row">
+            <label for="spaceSqFt">Area Floor Space</label>
+            <div class="input-group">
+                <input type="number" id="spaceSqFt" value="1500" step="10">
+                <span class="unit">Sq Ft</span>
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="buildingType">Facility Classification Type</label>
+            <select id="buildingType">
+                <option value="office">Commercial Office (High-Rise Suite)</option>
