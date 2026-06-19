@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProTech HVAC Field Tool Suite</title>
+    <title>ProTech HVAC Master Suite</title>
     <style>
         :root {
             --bg-main: #14171c;
@@ -20,22 +20,17 @@
         .app-container { background-color: var(--bg-card); border: 2px solid var(--border); border-top: 6px solid var(--primary); border-radius: 8px; width: 100%; max-width: 500px; padding: 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); margin-bottom: 20px; }
         header { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; text-align: center; }
         header h1 span { color: var(--primary); }
-        .section-title { font-size: 1rem; text-transform: uppercase; color: var(--primary); margin: 15px 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 4px; letter-spacing: 0.5px; }
+        .section-title { font-size: 1rem; text-transform: uppercase; color: var(--primary); margin: 20px 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 4px; letter-spacing: 0.5px; }
         .form-row { margin-bottom: 12px; }
         label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; color: var(--text-muted); }
         .input-group { position: relative; display: flex; }
         input[type="number"], select { width: 100%; padding: 12px; background-color: var(--bg-input); border: 1px solid var(--border); border-radius: 4px; color: var(--text-main); font-size: 1.1rem; font-weight: bold; }
         .unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-weight: bold; font-size: 0.9rem; }
-        .radio-group { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; background: var(--bg-main); padding: 10px; border-radius: 4px; border: 1px solid var(--border); }
-        .radio-label { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; }
-        .radio-label input { width: 18px; height: 18px; accent-color: var(--primary); }
-        .results-block { background-color: var(--bg-main); border-radius: 6px; padding: 12px; margin-top: 10px; border: 1px solid var(--border); }
+        .results-block { background-color: var(--bg-main); border-radius: 6px; padding: 15px; margin-top: 10px; border: 1px solid var(--border); }
         .data-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.95rem; border-bottom: 1px dashed var(--border); }
         .data-row:last-child { border-bottom: none; }
-        .val { font-weight: bold; color: var(--success); font-size: 1.1rem; }
-        .action-btn { background-color: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.5px; }
-        .action-btn:hover { background-color: #e05e00; }
-        .code-box { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; background: var(--bg-main); padding: 10px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px; }
+        .val { font-weight: bold; color: var(--success); font-size: 1.15rem; }
+        .code-box { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; background: var(--bg-main); padding: 12px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -44,8 +39,6 @@
     <header>
         <h1>ProTech <span>HVAC Master Suite</span></h1>
     </header>
-
-    <button class="action-btn" onclick="runAllCalculations()">⚡ Run All Master Calculations</button>
 
     <!-- MODULE 1 -->
     <div class="section-title">1. Psychrometrics Field Calculator</div>
@@ -79,19 +72,13 @@
         </select>
     </div>
     <div class="form-row">
-        <label>Is Structure Insulated?</label>
-        <select id="isInsulated" onchange="toggleInsulationView()">
-            <option value="no">No Insulation</option>
-            <option value="yes">Yes (Insulated Envelope)</option>
+        <label>Insulation Efficiency Profile</label>
+        <select id="insulationProfile" onchange="runAllCalculations()">
+            <option value="none">No Insulation (Bare Outer Shell)</option>
+            <option value="walls_ceilings">Complete Insulation (Walls & Ceilings)</option>
+            <option value="walls_only">Partial Insulation (Walls Only)</option>
+            <option value="attic_only">Partial Insulation (Attic / Ceiling Only)</option>
         </select>
-    </div>
-    <div class="form-row" id="insulationBox" style="display: none;">
-        <label>Envelope Options:</label>
-        <div class="radio-group">
-            <label class="radio-label"><input type="radio" name="insType" value="walls_ceilings" checked onchange="runAllCalculations()"> Walls and Ceilings</label>
-            <label class="radio-label"><input type="radio" name="insType" value="walls_only" onchange="runAllCalculations()"> Walls Only</label>
-            <label class="radio-label"><input type="radio" name="insType" value="attic_only" onchange="runAllCalculations()"> Attic / Ceiling Only</label>
-        </div>
     </div>
     <div class="results-block">
         <div class="data-row"><span>Estimated Cooling Load:</span><span class="val" id="resTons">--</span></div>
@@ -130,35 +117,34 @@
 </div>
 
 <script>
-function toggleInsulationView() {
-    const box = document.getElementById('insulationBox');
-    const isIns = document.getElementById('isInsulated').value;
-    box.style.display = (isIns === 'yes') ? 'block' : 'none';
-    runAllCalculations();
-}
-
 function runAllCalculations() {
     try {
-        // --- 1. PSYCH MASTER ENGINE ---
-        let dbF = parseFloat(document.getElementById('dbTemp').value);
-        let rh = parseFloat(document.getElementById('rhPct').value);
-        if (!isNaN(dbF) && !isNaN(rh)) {
-            let dbC = (dbF - 32) * 5 / 9;
-            let es = 0.61078 * Math.exp((17.27 * dbC) / (237.7 + dbC));
-            let e = (rh / 100) * es;
-            let alpha = ((17.27 * dbC) / (237.7 + dbC)) + Math.log(rh / 100);
-            let dpF = ((237.7 * alpha) / (17.27 - alpha) * 9 / 5) + 32;
-            let grains = 0.62194 * (e / (101.325 - e)) * 7000;
+        // 1. PSYCH MASTER CALCULATIONS
+        const dbF = parseFloat(document.getElementById('dbTemp').value);
+        const rh = parseFloat(document.getElementById('rhPct').value);
+        
+        if (!isNaN(dbF) && !isNaN(rh) && rh > 0 && rh <= 100) {
+            const dbC = (dbF - 32) * 5 / 9;
+            const es = 0.61078 * Math.exp((17.27 * dbC) / (237.7 + dbC));
+            const e = (rh / 100) * es;
+            const alpha = ((17.27 * dbC) / (237.7 + dbC)) + Math.log(rh / 100);
+            const dpF = ((237.7 * alpha) / (17.27 - alpha) * 9 / 5) + 32;
+            const grains = 0.62194 * (e / (101.325 - e)) * 7000;
 
             document.getElementById('resDewPoint').innerText = dpF.toFixed(1) + " °F";
             document.getElementById('resGrains').innerText = grains.toFixed(1) + " GPP";
             document.getElementById('resVapor').innerText = (e * 0.295333).toFixed(3) + " inHg";
+        } else {
+            document.getElementById('resDewPoint').innerText = "--";
+            document.getElementById('resGrains').innerText = "--";
+            document.getElementById('resVapor').innerText = "--";
         }
 
-        // --- 2. LOAD TONNAGE ENGINE ---
-        let sqFt = parseFloat(document.getElementById('spaceSqFt').value);
-        let type = document.getElementById('buildingType').value;
-        let isIns = document.getElementById('isInsulated').value;
+        // 2. LOAD TONNAGE CALCULATIONS
+        const sqFt = parseFloat(document.getElementById('spaceSqFt').value);
+        const type = document.getElementById('buildingType').value;
+        const profile = document.getElementById('insulationProfile').value;
+        
         if (!isNaN(sqFt) && sqFt > 0) {
             let base = 400;
             if (type === 'industrial') base = 250;
@@ -166,8 +152,28 @@ function runAllCalculations() {
             if (type === 'residential') base = 500;
 
             let mult = 1.0;
-            if (isIns === 'no') {
-                mult = 1.45;
-            } else {
-                const rad = document.querySelector('input[name="insType"]:checked');
-                if (rad) {
+            if (profile === 'none') mult = 1.45;
+            if (profile === 'walls_only') mult = 1.15;
+            if (profile === 'attic_only') mult = 1.25;
+            if (profile === 'walls_ceilings') mult = 0.90;
+
+            const tons = (sqFt / base) * mult;
+            document.getElementById('resTons').innerText = tons.toFixed(2) + " Tons";
+            document.getElementById('resCfm').innerText = Math.round(tons * 400).toLocaleString() + " CFM";
+        } else {
+            document.getElementById('resTons').innerText = "--";
+            document.getElementById('resCfm').innerText = "--";
+        }
+
+        // 3. DUCTULATOR CALCULATIONS
+        const cfm = parseFloat(document.getElementById('ductCfm').value);
+        const friction = parseFloat(document.getElementById('friction').value);
+        
+        if (!isNaN(cfm) && !isNaN(friction) && cfm > 0 && friction > 0) {
+            const dRound = 2.42 * Math.pow(cfm, 0.44) * Math.pow(friction, -0.22) * 0.1;
+            let wRect = Math.pow(dRound, 5) / 32000;
+            wRect = Math.pow(wRect, 0.125) * 2;
+            const vel = cfm / ((Math.PI * Math.pow(dRound / 12, 2)) / 4);
+
+            document.getElementById('resRoundDuct').innerText = dRound.toFixed(1) + " in.";
+            document.getElementById('resRectDuct').innerText = Math.ceil(wRect) + " in. x 10 in.";
