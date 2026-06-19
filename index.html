@@ -3,341 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProTech Enterprise HVAC Field Suite</title>
+    <title>ProTech HVAC Field Suite</title>
     <style>
         :root {
             --bg-main: #14171c;
             --bg-card: #1e222b;
             --bg-input: #282c34;
             --primary: #ff6b00; 
-            --primary-hover: #e05e00;
             --text-main: #ffffff;
             --text-muted: #abb2bf;
             --border: #3f4451;
             --success: #98c379;
             --danger: #e06c75;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-        }
-
-        .app-container {
-            background-color: var(--bg-card);
-            border: 2px solid var(--border);
-            border-top: 6px solid var(--primary);
-            border-radius: 8px;
-            width: 100%;
-            max-width: 600px;
-            padding: 15px;
-            box-shadow: 0 12px 32px rgba(0,0,0,0.4);
-            margin-bottom: 30px;
-        }
-
-        header {
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
-            text-align: center;
-        }
-
-        header h1 {
-            font-size: 1.3rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        header h1 span {
-            color: var(--primary);
-        }
-
-        .tab-navigation {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-bottom: 15px;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 8px;
-        }
-
-        .tab-btn {
-            background-color: var(--bg-input);
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            flex: 1 1 calc(20% - 5px);
-            text-align: center;
-        }
-
-        .tab-btn.active {
-            background-color: var(--primary);
-            color: var(--text-main);
-            border-color: var(--primary);
-        }
-
-        .tab-panel {
-            display: none;
-        }
-
-        .tab-panel.active {
-            display: block;
-        }
-
-        .form-row {
-            margin-bottom: 12px;
-        }
-
-        .radio-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 8px;
-            background: var(--bg-main);
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-        }
-
-        .radio-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-transform: none;
-            color: var(--text-main);
-            font-weight: normal;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-
-        .radio-label input {
-            accent-color: var(--primary);
-            width: 16px;
-            height: 16px;
-        }
-
-        label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-        }
-
-        .input-group {
-            position: relative;
-            display: flex;
-        }
-
-        input[type="number"], select, input[type="text"], input[type="email"] {
-            width: 100%;
-            padding: 10px;
-            background-color: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text-main);
-            font-size: 1rem;
-            font-weight: bold;
-        }
-
-        .unit {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary);
-            font-weight: bold;
-            font-size: 0.85rem;
-            pointer-events: none;
-        }
-
-        .results-block {
-            background-color: var(--bg-main);
-            border-radius: 6px;
-            padding: 12px;
-            margin-top: 15px;
-            border: 1px solid var(--border);
-        }
-
-        .results-block h3 {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 2px;
-        }
-
-        .data-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            font-size: 0.95rem;
-        }
-
-        .data-row:not(:last-child) {
-            border-bottom: 1px dashed var(--border);
-        }
-
-        .val {
-            font-weight: bold;
-            color: var(--success);
-        }
-
-        .gate-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.85);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-        }
-
-        .gate-content {
-            background-color: var(--bg-card);
-            border: 2px solid var(--primary);
-            border-radius: 8px;
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(255, 107, 0, 0.4);
-        }
-
-        .gate-btn {
-            background-color: var(--primary);
-            color: #fff;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            border-radius: 4px;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .action-btn {
-            background-color: transparent;
-            color: var(--primary);
-            border: 1px solid var(--primary);
-            padding: 8px;
-            width: 100%;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-        }
-
-        .bypass-toggle {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-decoration: underline;
-            cursor: pointer;
-            display: block;
-            margin-top: 15px;
-        }
-
-        .table-scroller {
-            overflow-x: auto;
-            margin-top: 8px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 6px;
-            border: 1px solid var(--border);
-        }
-
-        th {
-            background-color: var(--bg-main);
-            color: var(--primary);
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding: 10px; display: flex; justify-content: center; }
+        .app-container { background-color: var(--bg-card); border: 2px solid var(--border); border-top: 6px solid var(--primary); border-radius: 8px; width: 100%; max-width: 500px; padding: 15px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
+        header { margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; text-align: center; }
+        header h1 span { color: var(--primary); }
+        .tab-navigation { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 15px; }
+        .tab-btn { background-color: var(--bg-input); color: var(--text-muted); border: 1px solid var(--border); padding: 10px 6px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; flex: 1 1 calc(20% - 4px); text-align: center; }
+        .tab-btn.active { background-color: var(--primary); color: var(--text-main); border-color: var(--primary); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        .form-row { margin-bottom: 12px; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; color: var(--text-muted); }
+        .input-group { position: relative; display: flex; }
+        input[type="number"], select, input[type="text"], input[type="email"] { width: 100%; padding: 12px; background-color: var(--bg-input); border: 1px solid var(--border); border-radius: 4px; color: var(--text-main); font-size: 1rem; font-weight: bold; }
+        .unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-weight: bold; font-size: 0.85rem; }
+        .radio-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; background: var(--bg-main); padding: 10px; border-radius: 4px; border: 1px solid var(--border); }
+        .radio-label { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; }
+        .radio-label input { width: 18px; height: 18px; accent-color: var(--primary); }
+        .results-block { background-color: var(--bg-main); border-radius: 6px; padding: 12px; margin-top: 15px; border: 1px solid var(--border); }
+        .results-block h3 { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+        .data-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.95rem; border-bottom: 1px dashed var(--border); }
+        .data-row:last-child { border-bottom: none; }
+        .val { font-weight: bold; color: var(--success); }
+        .action-btn { background-color: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 12px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px; text-transform: uppercase; font-size: 0.85rem; }
+        .gate-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+        .gate-content { background-color: var(--bg-card); border: 2px solid var(--primary); border-radius: 8px; width: 100%; max-width: 380px; padding: 20px; text-align: center; }
+        .gate-btn { background-color: var(--primary); color: #fff; border: none; padding: 12px; width: 100%; border-radius: 4px; font-weight: bold; text-transform: uppercase; cursor: pointer; margin-top: 10px; }
+        .bypass-toggle { font-size: 0.75rem; color: var(--text-muted); text-decoration: underline; cursor: pointer; display: block; margin-top: 15px; }
+        .table-scroller { overflow-x: auto; margin-top: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 8px; border: 1px solid var(--border); text-align: left; }
+        th { background-color: var(--bg-main); color: var(--primary); }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <header>
-        <h1>ProTech <span>HVAC Field Suite</span></h1>
+        <h1>ProTech <span>HVAC Suite</span></h1>
     </header>
 
     <div class="tab-navigation">
-        <button class="tab-btn active" onclick="switchTab('psych')">Psych</button>
-        <button class="tab-btn" onclick="switchTab('tonnage')">AC Load</button>
-        <button class="tab-btn" onclick="switchTab('duct')">Ductulator</button>
-        <button class="tab-btn" onclick="switchTab('pt')">PT Chart</button>
-        <button class="tab-btn" onclick="switchTab('codes')">Codes</button>
+        <button id="btn-psych" class="tab-btn active" onclick="switchTab('psych')">Psych</button>
+        <button id="btn-tonnage" class="tab-btn" onclick="switchTab('tonnage')">AC Load</button>
+        <button id="btn-duct" class="tab-btn" onclick="switchTab('duct')">Duct</button>
+        <button id="btn-pt" class="tab-btn" onclick="switchTab('pt')">PT Chart</button>
+        <button id="btn-codes" class="tab-btn" onclick="switchTab('codes')">Codes</button>
     </div>
 
-    <!-- TAB 1: PSYCHROMECTRICS -->
+    <!-- PSYCH -->
     <div id="psych" class="tab-panel active">
         <div class="form-row">
-            <label for="dbTemp">Dry Bulb Temperature</label>
-            <div class="input-group">
-                <input type="number" id="dbTemp" value="75" step="0.1">
-                <span class="unit">°F</span>
-            </div>
+            <label>Dry Bulb Temperature</label>
+            <div class="input-group"><input type="number" id="dbTemp" value="75"><span class="unit">°F</span></div>
         </div>
         <div class="form-row">
-            <label for="rhPct">Relative Humidity</label>
-            <div class="input-group">
-                <input type="number" id="rhPct" value="50" step="1">
-                <span class="unit">% RH</span>
-            </div>
+            <label>Relative Humidity</label>
+            <div class="input-group"><input type="number" id="rhPct" value="50"><span class="unit">% RH</span></div>
         </div>
         <button class="action-btn" onclick="calculatePsychometrics()">Calculate Properties</button>
-        
         <div class="results-block">
             <h3>Calculated Values</h3>
             <div class="data-row"><span>Dew Point:</span><span class="val" id="resDewPoint">--</span></div>
             <div class="data-row"><span>Moisture Content:</span><span class="val" id="resGrains">--</span></div>
             <div class="data-row"><span>Vapor Pressure:</span><span class="val" id="resVapor">--</span></div>
         </div>
-        <button class="action-btn" onclick="triggerGate('Psychrometrics Report')">Export Clean PDF Report</button>
+        <button class="action-btn" onclick="triggerGate('Psychrometrics Report')">Export Report</button>
     </div>
 
-    <!-- TAB 2: TONNAGE ESTIMATOR -->
+    <!-- LOAD -->
     <div id="tonnage" class="tab-panel">
         <div class="form-row">
-            <label for="spaceSqFt">Area Floor Space</label>
-            <div class="input-group">
-                <input type="number" id="spaceSqFt" value="1500" step="10">
-                <span class="unit">Sq Ft</span>
-            </div>
+            <label>Area Floor Space</label>
+            <div class="input-group"><input type="number" id="spaceSqFt" value="1500"><span class="unit">Sq Ft</span></div>
         </div>
         <div class="form-row">
-            <label for="buildingType">Facility Classification Type</label>
+            <label>Facility Classification</label>
             <select id="buildingType">
-                <option value="office">Commercial Office (High-Rise Suite)</option>
+                <option value="office">Commercial Office</option>
+                <option value="industrial">Industrial Plant Floor</option>
+                <option value="server">Data Center Hub</option>
+                <option value="residential">Standard Residential</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label>Is Structure Insulated?</label>
+            <select id="isInsulated" onchange="toggleInsulation()">
+                <option value="no">No Insulation</option>
+                <option value="yes">Yes (Insulated Envelope)</option>
+            </select>
+        </div>
+        <div class="form-row" id="insulationBox" style="display: none;">
+            <label>Configurations:</label>
+            <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="insType" value="walls_ceilings" checked> Walls and Ceilings</label>
+                <label class="radio-label"><input type="radio" name="insType" value="walls_only"> Walls Only</label>
+                <label class="radio-label"><input type="radio" name="insType" value="attic_only"> Attic / Ceiling Only</label>
+                <label class="radio-label"><input type="radio" name="insType" value="none"> None</label>
+            </div>
+        </div>
+        <button class="action-btn" onclick="calculateTonnage()">Estimate HVAC Load</button>
+        <div class="results-block">
+            <h3>Required Cooling</h3>
+            <div class="data-row"><span>Estimated Load:</span><span class="val" id="resTons">--</span></div>
+            <div class="data-row"><span>Target Airflow:</span><span class="val" id="resCfm">--</span></div>
+        </div>
+        <button class="action-btn" onclick="triggerGate('AC Tonnage Report')">Export Report</button>
+    </div>
+
+    <!-- DUCT -->
+    <div id="duct" class="tab-panel">
+        <div class="form-row">
+            <label>Airflow Volume</label>
+            <div class="input-group"><input type="number" id="ductCfm" value="1200"><span class="unit">CFM</span></div>
+        </div>
+        <div class="form-row">
+            <label>Design Friction</label>
+            <div class="input-group"><input type="number" id="friction" value="0.10" step="0.01"><span class="unit">in. wg</span></div>
+        </div>
+        <button class="action-btn" onclick="calculateDuct()">Size Duct Parameters</button>
+        <div class="results-block">
+            <h3>Duct Sizing</h3>
+            <div class="data-row"><span>Round Diameter:</span><span class="val" id="resRoundDuct">--</span></div>
+            <div class="data-row"><span>Rectangular (10" H):</span><span class="val" id="resRectDuct">--</span></div>
+            <div class="data-row"><span>Velocity:</span><span class="val" id="resVelocity">--</span></div>
+        </div>
+        <button class="action-btn" onclick="triggerGate('Duct Design Report')">Export Report</button>
+    </div>
+
+    <!-- PT CHART -->
+    <div id="pt" class="tab-panel">
+        <div class="form-row">
+            <label>Select Refrigerant</label>
