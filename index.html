@@ -17,147 +17,126 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-main); padding: 15px; display: flex; flex-direction: column; align-items: center; }
-        .app-container { background-color: var(--bg-card); border: 2px solid var(--border); border-top: 6px solid var(--primary); border-radius: 8px; width: 100%; max-width: 500px; padding: 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); margin-bottom: 20px; text-align: center; }
-        header { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .app-container { background-color: var(--bg-card); border: 2px solid var(--border); border-top: 6px solid var(--primary); border-radius: 8px; width: 100%; max-width: 500px; padding: 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); margin-bottom: 20px; }
+        header { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; text-align: center; }
         header h1 span { color: var(--primary); }
-        .form-row { margin-bottom: 15px; text-align: left; }
-        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; text-transform: uppercase; color: var(--text-muted); }
+        .section-title { font-size: 1rem; text-transform: uppercase; color: var(--primary); margin: 20px 0 10px 0; border-bottom: 1px solid var(--border); padding-bottom: 4px; letter-spacing: 0.5px; }
+        .form-row { margin-bottom: 12px; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; color: var(--text-muted); }
         .input-group { position: relative; display: flex; }
-        input[type="number"], select { width: 100%; padding: 14px; background-color: var(--bg-input); border: 1px solid var(--border); border-radius: 4px; color: var(--text-main); font-size: 1.1rem; font-weight: bold; }
+        input[type="number"], select { width: 100%; padding: 12px; background-color: var(--bg-input); border: 1px solid var(--border); border-radius: 4px; color: var(--text-main); font-size: 1.1rem; font-weight: bold; }
         .unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-weight: bold; font-size: 0.9rem; }
-        .action-btn { background-color: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 1rem; letter-spacing: 0.5px; box-shadow: 0 4px 10px rgba(255,107,0,0.3); }
+        .results-block { background-color: var(--bg-main); border-radius: 6px; padding: 15px; margin-top: 10px; border: 1px solid var(--border); }
+        .data-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.95rem; border-bottom: 1px dashed var(--border); }
+        .data-row:last-child { border-bottom: none; }
+        .val { font-weight: bold; color: var(--success); font-size: 1.15rem; }
+        .action-btn { background-color: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.5px; display: block; }
         .action-btn:hover { background-color: #e05e00; }
-        .code-box { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; background: var(--bg-main); padding: 12px; border-radius: 4px; border: 1px solid var(--border); margin-top: 20px; text-align: left; }
+        .code-box { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; background: var(--bg-main); padding: 12px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px; }
+        .catalog-viewer { width: 100%; padding: 10px; background: var(--bg-input); color: #fff; border-radius: 4px; border: 1px solid var(--border); margin-top: 5px; font-size: 0.85rem; font-weight: bold; }
+        .catalog-output { background: var(--bg-main); border: 1px dashed var(--primary); padding: 10px; border-radius: 4px; margin-top: 8px; font-size: 0.85rem; line-height: 1.4; display: none; color: var(--text-muted); }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <header>
-        <h1>ProTech <span>HVAC Suite</span></h1>
+        <h1>ProTech <span>HVAC Master Suite</span></h1>
     </header>
 
-    <!-- FIELD VALUES INPUTS MATRIX -->
+    <!-- MODULE 1 -->
+    <div class="section-title">1. Psychrometrics Field Calculator</div>
     <div class="form-row">
-        <label>1. Dry Bulb Temperature</label>
-        <div class="input-group"><input type="number" id="dbTemp" value="75"><span class="unit">°F</span></div>
+        <label>Dry Bulb Temperature</label>
+        <div class="input-group"><input type="number" id="dbTemp" value="75" oninput="runAllCalculations()"><span class="unit">°F</span></div>
     </div>
-    
     <div class="form-row">
-        <label>2. Relative Humidity</label>
-        <div class="input-group"><input type="number" id="rhPct" value="50"><span class="unit">% RH</span></div>
+        <label>Relative Humidity</label>
+        <div class="input-group"><input type="number" id="rhPct" value="50" oninput="runAllCalculations()"><span class="unit">% RH</span></div>
+    </div>
+    <div class="results-block">
+        <div class="data-row"><span>Dew Point Target:</span><span class="val" id="resDewPoint">--</span></div>
+        <div class="data-row"><span>Moisture Content:</span><span class="val" id="resGrains">--</span></div>
+        <div class="data-row"><span>Vapor Pressure:</span><span class="val" id="resVapor">--</span></div>
     </div>
 
+    <!-- MODULE 2 -->
+    <div class="section-title">2. AC Load Tonnage Estimator</div>
     <div class="form-row">
-        <label>3. Area Floor Space</label>
-        <div class="input-group"><input type="number" id="spaceSqFt" value="1500"><span class="unit">Sq Ft</span></div>
+        <label>Area Floor Space</label>
+        <div class="input-group"><input type="number" id="spaceSqFt" value="1500" oninput="runAllCalculations()"><span class="unit">Sq Ft</span></div>
     </div>
-
     <div class="form-row">
-        <label>4. Facility Classification</label>
-        <select id="buildingType">
+        <label>Facility Classification</label>
+        <select id="buildingType" onchange="runAllCalculations()">
             <option value="office">Commercial Office Space</option>
             <option value="industrial">Industrial Plant Floor</option>
             <option value="server">Data Center Hub</option>
             <option value="residential">Standard Residential</option>
         </select>
     </div>
-
     <div class="form-row">
-        <label>5. Insulation Efficiency Profile</label>
-        <select id="insulationProfile">
+        <label>Insulation Efficiency Profile</label>
+        <select id="insulationProfile" onchange="runAllCalculations()">
             <option value="none">No Insulation (Bare Outer Shell)</option>
             <option value="walls_ceilings">Complete Insulation (Walls & Ceilings)</option>
             <option value="walls_only">Partial Insulation (Walls Only)</option>
             <option value="attic_only">Partial Insulation (Attic / Ceiling Only)</option>
         </select>
     </div>
+    <div class="results-block">
+        <div class="data-row"><span>Estimated Cooling Load:</span><span class="val" id="resTons">--</span></div>
+        <div class="data-row"><span>Target Airflow Volume:</span><span class="val" id="resCfm">--</span></div>
+    </div>
 
+    <!-- MODULE 3 -->
+    <div class="section-title">3. Ductulator Friction Sizer</div>
     <div class="form-row">
-        <label>6. Duct Airflow Volume</label>
-        <div class="input-group"><input type="number" id="ductCfm" value="1200"><span class="unit">CFM</span></div>
+        <label>Required Airflow Volume</label>
+        <div class="input-group"><input type="number" id="ductCfm" value="1200" oninput="runAllCalculations()"><span class="unit">CFM</span></div>
     </div>
-
     <div class="form-row">
-        <label>7. Duct Design Friction Rate</label>
-        <div class="input-group"><input type="number" id="friction" value="0.10" step="0.01"><span class="unit">in. wg</span></div>
+        <label>Design Friction Rate</label>
+        <div class="input-group"><input type="number" id="friction" value="0.10" step="0.01" oninput="runAllCalculations()"><span class="unit">in. wg</span></div>
+    </div>
+    <div class="results-block">
+        <div class="data-row"><span>Round Duct Diameter:</span><span class="val" id="resRoundDuct">--</span></div>
+        <div class="data-row"><span>Rectangular Equivalent (10" H):</span><span class="val" id="resRectDuct">--</span></div>
+        <div class="data-row"><span>Calculated Air Velocity:</span><span class="val" id="resVelocity">--</span></div>
     </div>
 
-    <!-- MAIN INTERACTION TRIGGER -->
-    <button class="action-btn" onclick="executeSystemCalculations()">⚡ Run System Computations</button>
+    <!-- MAIN SYSTEM UTILITIES INTERACTION -->
+    <button class="action-btn" onclick="exportEngineeringReport()">📥 Export Data Report (.txt)</button>
 
-    <!-- FIXED CODES REFERENCE FOOTER -->
+    <!-- MODULE 4: EXTENDED CATALOG DATA MATRIX -->
+    <div class="section-title">4. Compliance Engineering Manuals</div>
+    
     <div class="code-box">
-        <b style="color:var(--primary)">SMACNA Design Standards:</b><br>
-        • 2" w.g. Pressure Class: Seal Class C standard mandatory.<br>
-        • Hangers: Max 10-foot intervals on steel ducts.
+        <b style="color:var(--primary)">📋 SMACNA Construction Standards Catalog</b>
+        <select class="catalog-viewer" id="smacnaCatalogSelect" onchange="viewSmacnaChapter()">
+            <option value="">-- Choose Standard Specification Sub-Section --</option>
+            <option value="ch1">Chapter 1: Metal Duct Thickness and Pressure Joint Matrices</option>
+            <option value="ch2">Chapter 2: Transverse Joint Reinforcements (T-24 Drives / TDC/TDF)</option>
+            <option value="ch4">Chapter 4: Flexible Duct Structural Installation & Constraint Caps</option>
+            <option value="ch5">Chapter 5: Hanger Support Spacing & Structural Rod Specifications</option>
+        </select>
+        <div class="catalog-output" id="smacnaOutputBox"></div>
     </div>
+
     <div class="code-box">
-        <b style="color:var(--primary)">California Title 24:</b><br>
-        • Duct Insulation: R-6.0 minimum in conditioned space; R-8.0 in unconditioned area.<br>
-        • Max Allowable Duct Leakage Rate: HERS verified 4% maximum.<br>
-        • Fresh Ventilation Minimum: 15 CFM per occupant.
+        <b style="color:var(--primary)">☀️ California Title 24 Mechanical Code Catalog</b>
+        <select class="catalog-viewer" id="title24CatalogSelect" onchange="viewTitle24Chapter()">
+            <option value="">-- Choose Code Compliance Sub-Section --</option>
+            <option value="sec120">Section 120.1: Ventilation Requirements for High-Rise and Commercial Spaces</option>
+            <option value="sec120_4">Section 120.4: Mandatory Architectural Duct Insulation (R-Value Matrices)</option>
+            <option value="sec150">Section 150.0: Low-Rise Residential HERS Verified Air Distribution Caps</option>
+        </select>
+        <div class="catalog-output" id="title24OutputBox"></div>
     </div>
 </div>
 
 <script>
-function executeSystemCalculations() {
-    // 1. GATHER ALL REQUISITE RAW VALUES DEFENSIVELY
-    let dbF = parseFloat(document.getElementById('dbTemp').value) || 75;
-    let rh = parseFloat(document.getElementById('rhPct').value) || 50;
-    let sqFt = parseFloat(document.getElementById('spaceSqFt').value) || 1500;
-    let type = document.getElementById('buildingType').value || 'office';
-    let profile = document.getElementById('insulationProfile').value || 'none';
-    let cfm = parseFloat(document.getElementById('ductCfm').value) || 1200;
-    let friction = parseFloat(document.getElementById('friction').value) || 0.10;
-
-    // 2. RUN PSYCH ENGINE MATHEMATICS
-    let dbC = (dbF - 32) * 5 / 9;
-    let es = 0.61078 * Math.exp((17.27 * dbC) / (237.7 + dbC));
-    let e = (rh / 100) * es;
-    let alpha = ((17.27 * dbC) / (237.7 + dbC)) + Math.log(rh / 100);
-    let dpF = ((237.7 * alpha) / (17.27 - alpha) * 9 / 5) + 32;
-    let grains = 0.62194 * (e / (101.325 - e)) * 7000;
-    let vaporPress = e * 0.295333;
-
-    // 3. RUN AC LOAD TONNAGE ENGINE MATHEMATICS
-    let base = 400;
-    if (type === 'industrial') base = 250;
-    if (type === 'server') base = 100;
-    if (type === 'residential') base = 500;
-
-    let mult = 1.0;
-    if (profile === 'none') mult = 1.45;
-    if (profile === 'walls_only') mult = 1.15;
-    if (profile === 'attic_only') mult = 1.25;
-    if (profile === 'walls_ceilings') mult = 0.90;
-    let tons = (sqFt / base) * mult;
-    let loadCfm = tons * 400;
-
-    // 4. RUN FRICTION DUCTULATOR ENGINE MATHEMATICS
-    let dRound = 2.42 * Math.pow(cfm, 0.44) * Math.pow(friction, -0.22) * 0.1;
-    let wRect = Math.pow(dRound, 5) / 32000;
-    wRect = Math.pow(wRect, 0.125) * 2;
-    let vel = cfm / ((Math.PI * Math.pow(dRound / 12, 2)) / 4);
-
-    // 5. COMPILE ALL COMPLETED DATA METRICS INTO AN UNBREAKABLE POPUP BLOCK
-    let reportOutput = "=== PROTECH HVAC ENGINE REPORT ===\n\n" +
-                       "1. PSYCHROMETRIC PROPERTIES:\n" +
-                       "• Dew Point Target: " + dpF.toFixed(1) + " °F\n" +
-                       "• Moisture Content: " + grains.toFixed(1) + " GPP\n" +
-                       "• Vapor Pressure: " + vaporPress.toFixed(3) + " inHg\n\n" +
-                       "2. REQUIRED AC LOAD ESTIMATE:\n" +
-                       "• Total Cooling Load: " + tons.toFixed(2) + " Tons\n" +
-                       "• Nominal Airflow Target: " + Math.round(loadCfm).toLocaleString() + " CFM\n\n" +
-                       "3. RECOMMENDED DUCT SIZING:\n" +
-                       "• Round Duct Diameter: " + dRound.toFixed(1) + " Inches\n" +
-                       "• Rectangular Duct (10\" H): " + Math.ceil(wRect) + " in Wide\n" +
-                       "• Calculated Air Velocity: " + Math.round(vel).toLocaleString() + " FPM";
-
-    // DISPLAY OUTPUT DIRECTLY VIA SAFARI/CHROME NATIVE NOTIFICATION SYSTEM
-    alert(reportOutput);
-}
-</script>
-
-</body>
-</html>
+// HARDCODED COMPLIANCE SPECIFICATION DATABASES
+const SMACNA_CATALOG = {
+    ch1: "<b>SMACNA Chapter 1 - Material Specifications:</b><br>• For 2\" w.g. static pressure limits, minimum steel gauge for rectangular ducts up to 12\" wide is 26 Gauge.<br>• Ducts 13\" to 30\" wide require a minimum of 24 Gauge thickness structural sheet plates.<br>• Longitudinal seams must be structurally locked via Pittsburgh lock configurations or seam punch joins.",
+    ch2: "<b>SMACNA Chapter 2 - Transverse Joint Connections:</b><br>• Flat drive slip connections are permitted for joints up to 20 inches wide at a 2\" w.g. maximum static pressure classification.<br>• T-25 companion flange configurations require 1/2\" bolt anchors at perimeter corner junctions.<br>• Integral flange joints (TDC/TDF specifications) must include matching perimeter gasket seals completely across interface edges.",
