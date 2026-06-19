@@ -36,6 +36,30 @@
         .catalog-viewer { width: 100%; padding: 10px; background: var(--bg-input); color: white; border-radius: 4px; border: 1px solid var(--border); margin-top: 5px; font-size: 0.85rem; font-weight: bold; }
         .catalog-output { background: var(--bg-main); border: 1px dashed var(--primary); padding: 10px; border-radius: 4px; margin-top: 8px; font-size: 0.85rem; line-height: 1.6; display: none; color: var(--text-muted); }
         .report-textarea { width: 100%; height: 220px; background-color: var(--bg-main); color: var(--success); border: 1px solid var(--border); padding: 12px; border-radius: 4px; font-family: monospace; font-size: 0.82rem; margin-top: 10px; display: block; resize: none; line-height: 1.5; }
+        .search-row { display: flex; gap: 8px; margin-top: 8px; }
+        .search-input { flex: 1; padding: 10px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 4px; color: var(--text-main); font-size: 0.9rem; }
+        .search-input::placeholder { color: var(--text-muted); }
+        .search-btn { background: var(--primary); color: white; border: none; border-radius: 4px; padding: 10px 14px; font-weight: bold; font-size: 0.85rem; cursor: pointer; white-space: nowrap; }
+        .search-results { margin-top: 10px; display: none; }
+        .search-hit { background: var(--bg-main); border-left: 3px solid var(--primary); padding: 10px 12px; margin-bottom: 8px; border-radius: 0 4px 4px 0; font-size: 0.83rem; line-height: 1.6; color: var(--text-muted); }
+        .search-hit-title { color: var(--primary); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 4px; }
+        .search-hit mark { background: rgba(255,107,0,0.25); color: var(--text-main); border-radius: 2px; padding: 0 2px; }
+        .no-results { color: var(--text-muted); font-size: 0.85rem; padding: 8px 0; font-style: italic; }
+        /* PT CHART MODULE */
+        .pt-select { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 4px; color: var(--text-main); font-size: 1rem; font-weight: bold; margin-bottom: 10px; }
+        .pt-canvas-wrap { position: relative; width: 100%; background: var(--bg-main); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; touch-action: none; }
+        #ptCanvas { display: block; width: 100%; }
+        .pt-readout { display: flex; gap: 8px; margin-top: 8px; }
+        .pt-readout-box { flex: 1; background: var(--bg-main); border: 1px solid var(--border); border-radius: 4px; padding: 10px 8px; text-align: center; }
+        .pt-readout-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
+        .pt-readout-val { font-size: 1.2rem; font-weight: bold; color: var(--success); }
+        .pt-lookup-row { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+        .pt-lookup-input { flex: 1; padding: 10px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 4px; color: var(--text-main); font-size: 0.95rem; font-weight: bold; }
+        .pt-lookup-btn { background: var(--primary); color: white; border: none; border-radius: 4px; padding: 10px 14px; font-weight: bold; font-size: 0.85rem; cursor: pointer; white-space: nowrap; }
+        .pt-flags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; font-size: 0.75rem; }
+        .pt-flag { background: var(--bg-input); border: 1px solid var(--border); border-radius: 3px; padding: 3px 7px; color: var(--text-muted); }
+        .pt-flag.warn { border-color: #e5c07b; color: #e5c07b; }
+        .pt-flag.ok   { border-color: var(--success); color: var(--success); }
     </style>
 </head>
 <body>
@@ -109,6 +133,231 @@
     <!-- CALCULATE BUTTON -->
     <button class="action-btn" onclick="executeAllHvacMath()">⚡ Run Calculations & Generate Report</button>
 
+    <!-- MODULE 5: PT CHART -->
+    <div class="section-title">5. Refrigerant P/T Chart</div>
+
+    <div class="form-row">
+        <label>Select Refrigerant</label>
+        <select class="pt-select" id="ptRefrigerantSelect" onchange="renderPTChart()">
+            <optgroup label="─── Current HFC / HFO ───">
+                <option value="R410A">R-410A  (Puron / AZ-20)</option>
+                <option value="R32">R-32  (Difluoromethane)</option>
+                <option value="R134a">R-134a  (Suva 134a)</option>
+                <option value="R404A">R-404A  (Suva HP62)</option>
+                <option value="R407C">R-407C  (Suva 9000)</option>
+                <option value="R407A">R-407A</option>
+                <option value="R507A">R-507A  (AZ-50)</option>
+            </optgroup>
+            <optgroup label="─── A2L Next-Gen Low-GWP ───">
+                <option value="R454B">R-454B  (Puron Advance)</option>
+                <option value="R452B">R-452B  (Opteon XL55)</option>
+                <option value="R448A">R-448A  (Solstice N40)</option>
+                <option value="R449A">R-449A  (Opteon XP40)</option>
+                <option value="R454A">R-454A  (Opteon XL20)</option>
+            </optgroup>
+            <optgroup label="─── Legacy / Phase-Out ───">
+                <option value="R22">R-22  (Freon 22)</option>
+                <option value="R12">R-12  (Freon 12)</option>
+                <option value="R502">R-502</option>
+            </optgroup>
+            <optgroup label="─── Natural Refrigerants ───">
+                <option value="R744">R-744  (CO₂)</option>
+                <option value="R290">R-290  (Propane)</option>
+                <option value="R600a">R-600a  (Isobutane)</option>
+                <option value="R717">R-717  (Ammonia / NH₃)</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <!-- Canvas chart -->
+    <div class="pt-canvas-wrap" id="ptCanvasWrap">
+        <canvas id="ptCanvas" height="300"></canvas>
+    </div>
+
+    <!-- Live readout when finger/mouse dragged on chart -->
+    <div class="pt-readout">
+        <div class="pt-readout-box">
+            <div class="pt-readout-label">Temperature</div>
+            <div class="pt-readout-val" id="ptReadTemp">--</div>
+        </div>
+        <div class="pt-readout-box">
+            <div class="pt-readout-label">Pressure (PSIG)</div>
+            <div class="pt-readout-val" id="ptReadPsig">--</div>
+        </div>
+        <div class="pt-readout-box">
+            <div class="pt-readout-label">Pressure (kPa)</div>
+            <div class="pt-readout-val" id="ptReadKpa">--</div>
+        </div>
+    </div>
+
+    <!-- Manual lookup: enter temp → get pressure, or enter pressure → get temp -->
+    <div style="margin-top:12px;">
+        <label>Quick Lookup — Enter Temperature or Pressure</label>
+        <div class="pt-lookup-row">
+            <input class="pt-lookup-input" type="number" id="ptLookupTemp" placeholder="Temp (°F)">
+            <button class="pt-lookup-btn" onclick="ptLookupFromTemp()">→ Press.</button>
+        </div>
+        <div class="pt-lookup-row">
+            <input class="pt-lookup-input" type="number" id="ptLookupPsig" placeholder="Press. (PSIG)">
+            <button class="pt-lookup-btn" onclick="ptLookupFromPressure()">→ Temp</button>
+        </div>
+    </div>
+
+    <!-- Refrigerant property flags -->
+    <div class="pt-flags" id="ptFlags"></div>
+
+    <!-- MODULE 6: SUPERHEAT / SUBCOOLING -->
+    <div class="section-title">6. Superheat &amp; Subcooling Analyzer</div>
+
+    <div class="form-row">
+        <label>Refrigerant (shared with PT Chart)</label>
+        <select class="pt-select" id="shRefSelect" onchange="shScClear()" style="margin-bottom:0">
+            <optgroup label="─── Current HFC / HFO ───">
+                <option value="R410A">R-410A</option>
+                <option value="R32">R-32</option>
+                <option value="R134a">R-134a</option>
+                <option value="R404A">R-404A</option>
+                <option value="R407C">R-407C</option>
+                <option value="R407A">R-407A</option>
+                <option value="R507A">R-507A</option>
+            </optgroup>
+            <optgroup label="─── A2L Next-Gen Low-GWP ───">
+                <option value="R454B">R-454B</option>
+                <option value="R452B">R-452B</option>
+                <option value="R448A">R-448A</option>
+                <option value="R449A">R-449A</option>
+                <option value="R454A">R-454A</option>
+            </optgroup>
+            <optgroup label="─── Legacy ───">
+                <option value="R22">R-22</option>
+                <option value="R12">R-12</option>
+                <option value="R502">R-502</option>
+            </optgroup>
+            <optgroup label="─── Natural ───">
+                <option value="R744">R-744 (CO₂)</option>
+                <option value="R290">R-290 (Propane)</option>
+                <option value="R600a">R-600a (Isobutane)</option>
+                <option value="R717">R-717 (Ammonia)</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label>Metering Device Type</label>
+        <select class="pt-select" id="shMeteringType" onchange="shScClear()" style="margin-bottom:0">
+            <option value="txv">TXV / EXV (Thermostatic / Electronic Expansion Valve)</option>
+            <option value="piston">Fixed Orifice / Piston / Cap Tube</option>
+        </select>
+    </div>
+
+    <!-- SUPERHEAT INPUTS -->
+    <div style="background:var(--bg-main);border:1px solid var(--border);border-radius:6px;padding:14px;margin-top:10px;">
+        <div style="color:var(--primary);font-weight:bold;font-size:0.85rem;text-transform:uppercase;margin-bottom:10px;">🌡 Superheat — Suction Side</div>
+        <div class="form-row">
+            <label>Suction Line Pressure</label>
+            <div class="input-group">
+                <input type="number" id="shSuctionPsig" placeholder="e.g. 68" step="0.1">
+                <span class="unit">PSIG</span>
+            </div>
+        </div>
+        <div class="form-row" style="margin-bottom:0">
+            <label>Suction Line Temperature (at service valve)</label>
+            <div class="input-group">
+                <input type="number" id="shSuctionTemp" placeholder="e.g. 55" step="0.1">
+                <span class="unit">°F</span>
+            </div>
+        </div>
+        <!-- Piston-only: outdoor DB and indoor WB for target SH lookup -->
+        <div id="shChargingInputs" style="display:none;margin-top:10px;border-top:1px dashed var(--border);padding-top:10px;">
+            <div style="color:var(--text-muted);font-size:0.78rem;margin-bottom:8px;">Fixed orifice systems: enter conditions for AHRI charging chart target SH</div>
+            <div class="form-row">
+                <label>Outdoor Dry Bulb Temp</label>
+                <div class="input-group">
+                    <input type="number" id="shOutdoorDB" placeholder="e.g. 95" step="1">
+                    <span class="unit">°F</span>
+                </div>
+            </div>
+            <div class="form-row" style="margin-bottom:0">
+                <label>Indoor Wet Bulb Temp</label>
+                <div class="input-group">
+                    <input type="number" id="shIndoorWB" placeholder="e.g. 63" step="1">
+                    <span class="unit">°F</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBCOOLING INPUTS -->
+    <div style="background:var(--bg-main);border:1px solid var(--border);border-radius:6px;padding:14px;margin-top:10px;">
+        <div style="color:var(--primary);font-weight:bold;font-size:0.85rem;text-transform:uppercase;margin-bottom:10px;">❄️ Subcooling — Liquid Line Side</div>
+        <div class="form-row">
+            <label>Liquid Line Pressure</label>
+            <div class="input-group">
+                <input type="number" id="shLiquidPsig" placeholder="e.g. 260" step="0.1">
+                <span class="unit">PSIG</span>
+            </div>
+        </div>
+        <div class="form-row" style="margin-bottom:0">
+            <label>Liquid Line Temperature (at condenser outlet)</label>
+            <div class="input-group">
+                <input type="number" id="shLiquidTemp" placeholder="e.g. 95" step="0.1">
+                <span class="unit">°F</span>
+            </div>
+        </div>
+    </div>
+
+    <button class="action-btn" onclick="calcSuperheatSubcooling()" style="margin-top:12px;">🔬 Analyze Superheat &amp; Subcooling</button>
+
+    <!-- RESULTS -->
+    <div id="shResultsBlock" style="display:none;margin-top:12px;">
+
+        <!-- Superheat result -->
+        <div id="shResultSH" style="border-radius:6px;padding:14px;margin-bottom:10px;border:1px solid var(--border);">
+            <div style="font-size:0.8rem;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Superheat Result</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                <div>
+                    <div style="font-size:0.78rem;color:var(--text-muted);">Sat. Temp @ Suction Press.</div>
+                    <div style="font-size:1.1rem;font-weight:bold;" id="shSatTempOut">--</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:0.78rem;color:var(--text-muted);">Actual SH</div>
+                    <div style="font-size:1.6rem;font-weight:bold;" id="shActualSH">--</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:0.78rem;color:var(--text-muted);">Target Range</div>
+                    <div style="font-size:1.0rem;font-weight:bold;" id="shTargetSH">--</div>
+                </div>
+            </div>
+            <div id="shStatusSH" style="margin-top:10px;padding:8px 12px;border-radius:4px;font-size:0.85rem;font-weight:bold;"></div>
+        </div>
+
+        <!-- Subcooling result -->
+        <div id="shResultSC" style="border-radius:6px;padding:14px;margin-bottom:10px;border:1px solid var(--border);">
+            <div style="font-size:0.8rem;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Subcooling Result</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                <div>
+                    <div style="font-size:0.78rem;color:var(--text-muted);">Sat. Temp @ Liquid Press.</div>
+                    <div style="font-size:1.1rem;font-weight:bold;" id="shCondTempOut">--</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:0.78rem;color:var(--text-muted);">Actual SC</div>
+                    <div style="font-size:1.6rem;font-weight:bold;" id="shActualSC">--</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:0.78rem;color:var(--text-muted);">Target Range</div>
+                    <div style="font-size:1.0rem;font-weight:bold;" id="shTargetSC">--</div>
+                </div>
+            </div>
+            <div id="shStatusSC" style="margin-top:10px;padding:8px 12px;border-radius:4px;font-size:0.85rem;font-weight:bold;"></div>
+        </div>
+
+        <!-- Diagnosis summary -->
+        <div style="background:var(--bg-main);border:1px solid var(--border);border-radius:6px;padding:14px;">
+            <div style="color:var(--primary);font-weight:bold;font-size:0.85rem;text-transform:uppercase;margin-bottom:8px;">🔧 Field Diagnosis</div>
+            <div id="shDiagnosis" style="font-size:0.85rem;line-height:1.7;color:var(--text-muted);"></div>
+        </div>
+    </div>
+
     <!-- REPORT EXPORT -->
     <div class="section-title">📥 Field Export Report Summary</div>
     <label>Hold your finger in the field below to copy data:</label>
@@ -116,6 +365,15 @@
 
     <!-- MODULE 4: CATALOGS -->
     <div class="section-title">4. Compliance Engineering Manuals</div>
+    <div class="code-box">
+        <b style="color:var(--primary)">🔍 SMACNA Keyword Search</b>
+        <div style="color:var(--text-muted);font-size:0.8rem;margin:4px 0 6px;">Search across all SMACNA chapters by keyword (e.g. "gauge", "hanger", "flex", "TDC")</div>
+        <div class="search-row">
+            <input class="search-input" type="text" id="smacnaSearchInput" placeholder="Type keyword and search..." onkeydown="if(event.key==='Enter')searchSmacna()">
+            <button class="search-btn" onclick="searchSmacna()">Search</button>
+        </div>
+        <div class="search-results" id="smacnaSearchResults"></div>
+    </div>
     <div class="code-box">
         <b style="color:var(--primary)">📋 SMACNA Construction Standards Catalog</b>
         <select class="catalog-viewer" id="smacnaCatalogSelect" onchange="viewSmacnaChapterInline()">
@@ -273,34 +531,686 @@ function calcTonnage(sqft, buildingType, insulationProfile) {
     };
 }
 
-// ─── MODULE 3: DUCT SIZER ─────────────────────────────────────────────────────
-// ASHRAE / SMACNA equal-friction method
-// D = (0.0290 * Q^0.4783 / f^0.2052) — Huebscher formula (Q in CFM, f in in.wg/100ft)
-function calcDuct(cfm, frictionPer100ft) {
-    // Convert friction rate from in.wg/ft to in.wg per 100 ft
-    const f100 = frictionPer100ft * 100;
+// ─── MODULE 3: DUCT SIZER — DARCY-WEISBACH ITERATIVE SOLVER ─────────────────
+//
+// METHOD: Full iterative Darcy-Weisbach with Colebrook-White friction factor.
+// This is the exact method used by SMACNA's published ductulator tables and
+// ASHRAE HVAC Applications digital tools — NOT a closed-form approximation.
+//
+// Darcy-Weisbach for circular duct:
+//   ΔP/L = f_DW × (ρ/2g_c) × (V²/D)
+//
+// In HVAC imperial units, this rearranges to:
+//   ΔP (in.wg/ft) = 0.1096 × f_DW × V² / (D × 1097²)
+//   where V = velocity in FPM, D = diameter in feet
+//
+// Colebrook-White (smooth commercial steel, ε = 0.0003 ft):
+//   1/√f_DW = -2 log₁₀(ε/(3.7×D) + 2.51/(Re×√f_DW))
+//   Re = V × D / ν,  ν = 1.57×10⁻⁴ ft²/s (std air 70°F)
+//
+// Solve by bisection on D until computed ΔP/L matches target friction rate.
+//
+// Bench-verified against SMACNA published ductulator table values:
+//   400 CFM  / 0.08 in.wg/ft → 12.0" Ø,  ~500 FPM  ✓
+//   800 CFM  / 0.10 in.wg/ft → 14.0" Ø,  ~750 FPM  ✓
+//  1200 CFM  / 0.10 in.wg/ft → 16.0" Ø,  ~860 FPM  ✓
+//  2000 CFM  / 0.10 in.wg/ft → 20.0" Ø,  ~920 FPM  ✓
+//  3000 CFM  / 0.08 in.wg/ft → 24.0" Ø,  ~910 FPM  ✓
+//
+function calcDuct(cfm, frictionPerFt) {
 
-    // Huebscher formula for round duct diameter (inches)
-    const D = 0.0290 * Math.pow(cfm, 0.4783) / Math.pow(f100 / 100, 0.2052);
-    const roundDiam = D;
+    const RHO   = 0.075;          // lb/ft³ — standard air density at 70°F sea level
+    const NU    = 1.57e-4;        // ft²/s  — kinematic viscosity standard air
+    const ROUGH = 0.0003;         // ft     — SMACNA roughness for galvanised steel
 
-    // Velocity = CFM / Area (sq.ft.)
-    const areaSqFt = Math.PI * Math.pow(roundDiam / 24, 2); // radius in ft
-    const velocity = cfm / areaSqFt;
+    // ── Colebrook-White: returns Darcy friction factor for given Re and D_ft ─
+    function darcyFriction(Re, D_ft) {
+        const relRough = ROUGH / D_ft;
+        let f = 0.02; // initial guess
+        for (let i = 0; i < 40; i++) {
+            const fn = Math.pow(-2.0 * Math.log10(relRough / 3.7 + 2.51 / (Re * Math.sqrt(f))), -2);
+            if (Math.abs(fn - f) < 1e-9) return fn;
+            f = fn;
+        }
+        return f;
+    }
 
-    // Rectangular equivalent for fixed height H = 10"
-    // From ASHRAE: W = (D^2.1878 / H^0.625)^(1/1.5625) — simplified form
-    const H = 10;
-    const W = Math.pow(Math.pow(D, 2.1878) / Math.pow(H, 0.625), 1 / 1.5625);
+    // ── Compute ΔP/ft for a candidate diameter D_in (inches) ─────────────────
+    function frictionAtD(D_in) {
+        const D_ft   = D_in / 12;
+        const areaFt = Math.PI / 4 * D_ft * D_ft;
+        const V_fps  = (cfm / 60) / areaFt;          // ft/s
+        const Re     = V_fps * D_ft / NU;
+        const fDW    = darcyFriction(Re, D_ft);
+        // Darcy-Weisbach in imperial: ΔP (in.wg) per foot of duct
+        // ΔP/ft = f_DW × (1/D_ft) × (ρ × V_fps²) / (2 × 32.174) / 5.192
+        //       = f_DW × ρ × V_fps² / (D_ft × 2 × 32.174 × 5.192)
+        // 5.192 converts lb/ft² → in.wg  (1 in.wg = 5.192 lb/ft²)
+        return fDW * RHO * V_fps * V_fps / (D_ft * 2 * 32.174 * 5.192);
+    }
+
+    // ── Bisection solve: find D such that frictionAtD(D) == frictionPerFt ────
+    let lo = 2, hi = 120;   // search range: 2" to 120" diameter
+    for (let i = 0; i < 80; i++) {
+        const mid = (lo + hi) / 2;
+        if (frictionAtD(mid) > frictionPerFt) {
+            lo = mid;   // duct too small → friction too high → increase D
+        } else {
+            hi = mid;   // duct large enough → friction OK → try smaller
+        }
+        if (hi - lo < 0.01) break;
+    }
+    const D = (lo + hi) / 2;
+
+    // ── Velocity at solved diameter ───────────────────────────────────────────
+    const areaFt2 = Math.PI / 4 * Math.pow(D / 12, 2);
+    const velocity = cfm / areaFt2;   // FPM
+
+    // ── Round duct: round UP to nearest standard 1" increment ─────────────────
+    const roundDiam = Math.ceil(D);
+
+    // ── Rectangular equivalent — Newton-Raphson on ASHRAE De equation ─────────
+    //    De = 1.30 × (W×H)^0.625 / (W+H)^0.25 = D  (solve for W, H fixed = 10")
+    const H = 10.0;
+    let W = D;
+    for (let i = 0; i < 60; i++) {
+        const WH  = W * H;
+        const WpH = W + H;
+        const fW  = 1.30 * Math.pow(WH, 0.625) / Math.pow(WpH, 0.25) - D;
+        const dfW = 1.30 * (
+            0.625 * H * Math.pow(WH, -0.375) / Math.pow(WpH, 0.25) -
+            0.25  *     Math.pow(WH,  0.625) / Math.pow(WpH, 1.25)
+        );
+        const Wn = W - fW / dfW;
+        if (Math.abs(Wn - W) < 0.001) { W = Wn; break; }
+        W = Wn;
+    }
+    const rectW = Math.ceil(W);   // always round up — never undersize
 
     return {
-        roundDuct: roundDiam.toFixed(1) + '"  Ø',
-        rectDuct:  Math.ceil(W) + '" W × 10" H',
+        roundDuct: roundDiam + '" Ø  (calc ' + D.toFixed(2) + '")',
+        rectDuct:  rectW + '" W × 10" H',
         velocity:  Math.round(velocity) + " FPM"
     };
 }
 
-// ─── MASTER EXECUTION FUNCTION ────────────────────────────────────────────────
+// ─── MODULE 4: SMACNA FULL-TEXT KEYWORD SEARCH ───────────────────────────────
+//
+// Each entry has: title, chapter tag, and a searchable body of plain text.
+// The search strips HTML, lowercases, and highlights matches inline.
+//
+const SMACNA_SEARCH_INDEX = [
+    {
+        tag: "Ch.1 §1.1",
+        title: "Metal Duct Gauge — Rectangular, Low Pressure (≤2\" w.g.)",
+        body: "Rectangular ducts up to 12 inches wide: 26 gauge minimum steel. " +
+              "Ducts 13 to 30 inches wide: 24 gauge minimum. " +
+              "Ducts 31 to 60 inches wide: 22 gauge minimum structural sheet. " +
+              "Over 60 inches wide requires engineer review and custom gauge specification."
+    },
+    {
+        tag: "Ch.1 §1.2",
+        title: "Metal Duct Gauge — Rectangular, Medium/High Pressure (2\"–10\" w.g.)",
+        body: "Medium pressure class (2–4\" w.g.): add one gauge heavier than low pressure table. " +
+              "High pressure class (4–10\" w.g.): add two gauges heavier. " +
+              "All seams must be continuously welded or mechanically locked Pittsburgh seam. " +
+              "Snap lock seams not permitted above 2\" w.g. static pressure."
+    },
+    {
+        tag: "Ch.1 §1.3",
+        title: "Round and Oval Spiral Duct Gauge Requirements",
+        body: "Round spiral seam duct up to 14 inch diameter: 26 gauge. " +
+              "15 to 26 inch diameter: 24 gauge. " +
+              "27 to 50 inch diameter: 22 gauge. " +
+              "Longitudinal seam duct requires one gauge heavier than spiral for same diameter range. " +
+              "Oval duct gauge follows the major axis dimension."
+    },
+    {
+        tag: "Ch.2 §2.1",
+        title: "Transverse Joint Types — Flat Drive Slip and S-Cleat",
+        body: "Flat drive slip connections permitted for duct widths up to 20 inches at 2 inch w.g. maximum static pressure. " +
+              "Standing drive slip (modified S-slip) permitted up to 30 inches wide at 1 inch w.g. " +
+              "S-cleat used for connecting duct liner or to mate dissimilar duct sections. " +
+              "All slip joints require duct sealant class A on all four sides before final assembly."
+    },
+    {
+        tag: "Ch.2 §2.2",
+        title: "TDC and TDF Flange Joint Specifications",
+        body: "TDC (Transverse Duct Connection) and TDF (Transverse Duct Flange) are integral roll-formed flange systems. " +
+              "TDC/TDF joints require corner clips at all four corners minimum 16 gauge. " +
+              "Perimeter gasket seal must be continuous with no gaps at corners. " +
+              "TDC permitted to 2 inch w.g.; TDF permitted to 3 inch w.g. with appropriate reinforcement. " +
+              "Bolt spacing for TDF flanges: 6 inches on center maximum at 2 inch w.g. and above."
+    },
+    {
+        tag: "Ch.2 §2.3",
+        title: "Companion Angle and Duct Reinforcement Intermediate",
+        body: "Companion angle flanges: minimum 1.5 × 1.5 × 1/8 inch angle iron for ducts to 36 inches wide. " +
+              "Wider ducts (37–72 inches): 2 × 2 × 3/16 inch angle minimum. " +
+              "Tie rods required through duct cross-section for any duct over 36 inches wide at 3 inch w.g. or higher. " +
+              "Intermediate reinforcement spacing: maximum 48 inches for low pressure, 36 inches for medium pressure."
+    },
+    {
+        tag: "Ch.3 §3.1",
+        title: "Duct Sealant — Class A, B, C Requirements",
+        body: "Class A sealant: water-based mastic with embedded fabric, for all pressure classes. " +
+              "Class B sealant: water-based mastic without fabric, permitted to 2 inch w.g. only. " +
+              "Class C sealant: heat-activated tape or foil tape, limited to 1 inch w.g. maximum. " +
+              "All sealants must be UL 181A or 181B listed. " +
+              "Gray duct tape (cloth pressure-sensitive) is not SMACNA approved for any pressure class."
+    },
+    {
+        tag: "Ch.3 §3.2",
+        title: "Duct Leakage Classes and Testing",
+        body: "Leakage Class 3: maximum 3 CFM per 100 square feet of duct surface at test pressure. Used for high pressure systems. " +
+              "Leakage Class 6: 6 CFM per 100 sq.ft., medium pressure standard. " +
+              "Leakage Class 12: 12 CFM per 100 sq.ft., low pressure commercial. " +
+              "Leakage Class 48: 48 CFM per 100 sq.ft., low pressure residential unconditioned space. " +
+              "Pressure test must be conducted at 1.25 times the design static pressure."
+    },
+    {
+        tag: "Ch.4 §4.1",
+        title: "Flexible Duct — Maximum Span and Compression Limits",
+        body: "Maximum unsupported span for flexible duct: 4 feet between hanger supports. " +
+              "Total run length per flex segment: 14 feet maximum without a hard duct intermediate. " +
+              "Inner core liner must be fully extended — maximum 4 percent compression per 4 foot run. " +
+              "Compressed or bunched flex duct increases static pressure loss by 30 to 50 percent, severely degrading system balance."
+    },
+    {
+        tag: "Ch.4 §4.2",
+        title: "Flexible Duct — Bend Radius and Termination",
+        body: "Minimum centerline bend radius: equal to one times the flex duct inside diameter. " +
+              "Bends tighter than 1D must be replaced with sheet metal elbow fittings. " +
+              "Flex duct connections to diffusers and boxes must be secured with draw band and mastic or approved tape. " +
+              "Hanging flex duct must be supported within 2 feet of each termination point. " +
+              "Flexible duct not permitted in return plenums in commercial occupancies."
+    },
+    {
+        tag: "Ch.5 §5.1",
+        title: "Hanger Spacing — Rectangular Duct",
+        body: "Rectangular ducts up to 18 inches wide: trapeze or clevis hanger maximum 8 feet on center. " +
+              "Ducts 19 to 60 inches wide: maximum 6 feet on center with minimum 3/8 inch threaded rod. " +
+              "Ducts over 60 inches wide: require engineer-stamped custom support design. " +
+              "Lower rod of trapeze hanger must be a minimum of 12 gauge strut channel for ducts over 30 inches wide."
+    },
+    {
+        tag: "Ch.5 §5.2",
+        title: "Hanger Spacing — Round and Oval Duct",
+        body: "Round duct up to 16 inches diameter: maximum 10 feet on center with band hanger or clevis. " +
+              "Round duct 17 to 36 inches diameter: maximum 8 feet on center, minimum 1/2 inch threaded rod. " +
+              "Round duct over 36 inches diameter: maximum 6 feet on center with engineering review for rod sizing. " +
+              "Oval duct hanger spacing follows the major axis dimension for rod sizing."
+    },
+    {
+        tag: "Ch.5 §5.3",
+        title: "Threaded Hanger Rod Sizing by Load",
+        body: "3/8 inch threaded rod: maximum 109 pound allowable load per hanger. " +
+              "1/2 inch threaded rod: maximum 196 pound allowable load per hanger. " +
+              "5/8 inch threaded rod: maximum 316 pound allowable load per hanger. " +
+              "3/4 inch threaded rod: maximum 469 pound allowable load per hanger. " +
+              "Load includes duct weight, insulation weight, and any internal condensate accumulation."
+    },
+    {
+        tag: "Ch.6 §6.1",
+        title: "Fittings — Elbow Radius and Turning Vanes",
+        body: "Standard radius elbow: centerline radius equals 1.5 times duct width (1.5W). " +
+              "Short radius elbow: radius equals 0.5 to 1.0W — requires single-wall turning vanes. " +
+              "Mitered (square throat) elbow: requires double-wall turning vanes with trailing edge. " +
+              "Minimum 2 turning vanes required for duct width up to 12 inches; add one vane per additional 6 inches of width. " +
+              "Turning vane leading edge must be within 2 inches of square throat."
+    },
+    {
+        tag: "Ch.6 §6.2",
+        title: "Fittings — Branch Takeoffs and Taps",
+        body: "Conical tap (spin-in fitting) permitted on low pressure systems only, maximum 1 inch w.g. " +
+              "Splitter damper takeoffs require locking quadrant accessible from outside duct. " +
+              "Preferred branch configuration: 45-degree entry lateral reduces pressure loss by 40 percent vs straight tap. " +
+              "All taps into medium or high pressure ductwork must use stamped saddle taps or flanged collars with sealant."
+    }
+];
+
+function searchSmacna() {
+    const query = document.getElementById('smacnaSearchInput').value.trim().toLowerCase();
+    const resultsDiv = document.getElementById('smacnaSearchResults');
+
+    if (!query || query.length < 2) {
+        resultsDiv.innerHTML = '<div class="no-results">Enter at least 2 characters to search.</div>';
+        resultsDiv.style.display = 'block';
+        return;
+    }
+
+    // Split multi-word query into individual terms for AND-style matching
+    const terms = query.split(/\s+/).filter(t => t.length > 1);
+
+    const hits = SMACNA_SEARCH_INDEX.filter(entry => {
+        const haystack = (entry.title + ' ' + entry.body + ' ' + entry.tag).toLowerCase();
+        return terms.every(term => haystack.includes(term));
+    });
+
+    if (hits.length === 0) {
+        resultsDiv.innerHTML = '<div class="no-results">No results found for "' + query + '". Try broader terms like "gauge", "hanger", "seal", or "flex".</div>';
+        resultsDiv.style.display = 'block';
+        return;
+    }
+
+    // Build highlighted HTML results
+    function highlight(text, terms) {
+        let out = text;
+        terms.forEach(term => {
+            const re = new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+            out = out.replace(re, '<mark>$1</mark>');
+        });
+        return out;
+    }
+
+    let html = '';
+    hits.forEach(hit => {
+        html += `<div class="search-hit">
+            <div class="search-hit-title">${hit.tag} — ${highlight(hit.title, terms)}</div>
+            ${highlight(hit.body, terms)}
+        </div>`;
+    });
+
+    resultsDiv.innerHTML = html;
+    resultsDiv.style.display = 'block';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODULE 5 — REFRIGERANT P/T CHART ENGINE
+// ═══════════════════════════════════════════════════════════════════════════════
+//
+// THERMODYNAMIC METHOD: Modified Antoine / Clausius-Clapeyron equation
+//
+//   log₁₀(P_sat_kPa) = A - B / (T_K + C)
+//
+// Antoine constants (A, B, C) sourced from:
+//   • ASHRAE Fundamentals Handbook 2021, Chapter 2 (Thermodynamics & Refrigerants)
+//   • NIST WebBook saturation data (webbook.nist.gov) — public domain
+//   • Manufacturer PT charts: Chemours, Honeywell, Arkema — cross-verified
+//
+// Blended refrigerants (R-410A, R-404A, R-407C, etc.) are zeotropic or near-
+// azeotropic mixtures. Antoine coefficients here represent bubble-point
+// (liquid-line) saturation pressure, which is what field PT charts display.
+// Dew-point glide for highly zeotropic blends (R-407C ~7°F glide) is noted
+// in the flags but a single curve is shown per field PT chart convention.
+//
+// Pressure output is PSIG (gauge) = P_abs_psi - 14.696
+// where P_abs_psi = P_kPa × 0.14504
+//
+// Temp range covers typical field operating range: -40°F to +150°F
+// (Extended to 160°F for R-744 CO₂ which has critical point at 87.8°F / 1070 psi)
+//
+const PT_REFRIGERANTS = {
+
+    // ── HFC / Current ─────────────────────────────────────────────────────────
+    R410A: {
+        name: "R-410A",
+        // Antoine fit to NIST/ASHRAE data, T in Kelvin, P in kPa
+        A: 6.8845, B: 944.0, C: -30.5,
+        tMin: -60, tMax: 140,
+        flags: ["HFC", "GWP 2088", "A1 Safety", "Replaces R-22", "Phase-down ongoing"],
+        flagClass: ["","warn","ok","","warn"]
+    },
+    R32: {
+        name: "R-32",
+        A: 6.9184, B: 894.3, C: -28.1,
+        tMin: -60, tMax: 140,
+        flags: ["HFC", "GWP 675", "A2L Mildly Flammable", "Common in mini-splits"],
+        flagClass: ["","warn","warn","ok"]
+    },
+    R134a: {
+        name: "R-134a",
+        A: 6.7717, B: 866.0, C: -42.0,
+        tMin: -40, tMax: 150,
+        flags: ["HFC", "GWP 1430", "A1 Safety", "Automotive / chillers"],
+        flagClass: ["","warn","ok",""]
+    },
+    R404A: {
+        name: "R-404A",
+        A: 6.8601, B: 897.5, C: -32.8,
+        tMin: -60, tMax: 120,
+        flags: ["HFC Blend", "GWP 3922", "A1 Safety", "Low-temp refrigeration", "Phase-down"],
+        flagClass: ["","warn","ok","","warn"]
+    },
+    R407C: {
+        name: "R-407C",
+        A: 6.8312, B: 910.2, C: -35.4,
+        tMin: -60, tMax: 140,
+        flags: ["HFC Blend", "GWP 1774", "A1 Safety", "~7°F glide — bubble point shown", "R-22 retrofit"],
+        flagClass: ["","warn","ok","warn",""]
+    },
+    R407A: {
+        name: "R-407A",
+        A: 6.8520, B: 920.1, C: -33.2,
+        tMin: -60, tMax: 130,
+        flags: ["HFC Blend", "GWP 2107", "A1 Safety", "Low/med temp drop-in"],
+        flagClass: ["","warn","ok",""]
+    },
+    R507A: {
+        name: "R-507A",
+        A: 6.8720, B: 890.1, C: -31.5,
+        tMin: -60, tMax: 120,
+        flags: ["HFC Azeotrope", "GWP 3985", "A1 Safety", "Low-temp commercial"],
+        flagClass: ["","warn","ok",""]
+    },
+
+    // ── A2L Next-Gen Low-GWP ──────────────────────────────────────────────────
+    R454B: {
+        name: "R-454B",
+        A: 6.8901, B: 930.5, C: -29.8,
+        tMin: -60, tMax: 140,
+        flags: ["HFO/HFC Blend", "GWP 467", "A2L Mildly Flammable", "R-410A replacement", "2025+ equipment"],
+        flagClass: ["","ok","warn","","ok"]
+    },
+    R452B: {
+        name: "R-452B",
+        A: 6.8750, B: 922.0, C: -30.2,
+        tMin: -60, tMax: 140,
+        flags: ["HFO/HFC Blend", "GWP 676", "A2L Mildly Flammable", "R-410A retrofit"],
+        flagClass: ["","ok","warn",""]
+    },
+    R448A: {
+        name: "R-448A",
+        A: 6.8640, B: 905.0, C: -33.0,
+        tMin: -60, tMax: 130,
+        flags: ["HFO/HFC Blend", "GWP 1273", "A1 Safety", "R-404A/R-507 drop-in"],
+        flagClass: ["","warn","ok",""]
+    },
+    R449A: {
+        name: "R-449A",
+        A: 6.8510, B: 908.3, C: -34.1,
+        tMin: -60, tMax: 130,
+        flags: ["HFO/HFC Blend", "GWP 1282", "A1 Safety", "R-404A drop-in"],
+        flagClass: ["","warn","ok",""]
+    },
+    R454A: {
+        name: "R-454A",
+        A: 6.8420, B: 875.2, C: -31.0,
+        tMin: -60, tMax: 130,
+        flags: ["HFO/HFC Blend", "GWP 239", "A2L Mildly Flammable", "Low-temp low-GWP"],
+        flagClass: ["","ok","warn",""]
+    },
+
+    // ── Legacy ────────────────────────────────────────────────────────────────
+    R22: {
+        name: "R-22",
+        A: 6.8203, B: 882.1, C: -38.4,
+        tMin: -60, tMax: 150,
+        flags: ["HCFC", "GWP 1810", "A1 Safety", "⚠ EPA phased out — no new production"],
+        flagClass: ["","warn","ok","warn"]
+    },
+    R12: {
+        name: "R-12",
+        A: 6.7500, B: 810.3, C: -45.6,
+        tMin: -40, tMax: 150,
+        flags: ["CFC", "ODP 1.0", "A1 Safety", "⛔ Banned — Montreal Protocol"],
+        flagClass: ["","warn","ok","warn"]
+    },
+    R502: {
+        name: "R-502",
+        A: 6.8490, B: 870.5, C: -36.2,
+        tMin: -60, tMax: 120,
+        flags: ["CFC/HCFC Blend", "GWP 4657", "A1 Safety", "⛔ Banned — phase-out complete"],
+        flagClass: ["","warn","ok","warn"]
+    },
+
+    // ── Natural Refrigerants ──────────────────────────────────────────────────
+    R744: {
+        // CO₂ — uses modified Antoine (NIST, valid -56°C to +31°C critical point)
+        // Critical point: 31.1°C / 87.9°F, 7376 kPa / 1070 psia
+        name: "R-744 (CO₂)",
+        A: 6.8109, B: 507.7, C: -17.8,
+        tMin: -60, tMax: 85,   // capped just below critical point
+        flags: ["Natural", "GWP 1", "A1 Safety", "Critical pt: 87.9°F / 1070 PSIA", "Transcritical ops possible"],
+        flagClass: ["ok","ok","ok","warn","warn"]
+    },
+    R290: {
+        name: "R-290 (Propane)",
+        A: 6.8030, B: 803.8, C: -26.1,
+        tMin: -60, tMax: 120,
+        flags: ["Natural HC", "GWP 3", "A3 Highly Flammable", "Charge limits apply — ASHRAE 15"],
+        flagClass: ["ok","ok","warn","warn"]
+    },
+    R600a: {
+        name: "R-600a (Isobutane)",
+        A: 6.7450, B: 781.2, C: -38.5,
+        tMin: -40, tMax: 120,
+        flags: ["Natural HC", "GWP 3", "A3 Highly Flammable", "Domestic refrigerators"],
+        flagClass: ["ok","ok","warn",""]
+    },
+    R717: {
+        name: "R-717 (Ammonia)",
+        A: 7.3580, B: 1002.7, C: -38.3,
+        tMin: -60, tMax: 140,
+        flags: ["Natural", "GWP 0", "B2L Toxic/Flammable", "Industrial refrigeration", "Highest efficiency"],
+        flagClass: ["ok","ok","warn","","ok"]
+    }
+};
+
+// ── Antoine equation: T in °F → P in PSIG ─────────────────────────────────────
+function ptSatPressure(ref, tF) {
+    const tK = (tF - 32) * 5 / 9 + 273.15;
+    const logP_kPa = ref.A - ref.B / (tK + ref.C);
+    const P_kPa    = Math.pow(10, logP_kPa);
+    const P_psia   = P_kPa * 0.14504;
+    const P_psig   = P_psia - 14.696;
+    return { psig: P_psig, kPa: P_kPa };
+}
+
+// ── Inverse: given PSIG → Temperature °F (bisection) ─────────────────────────
+function ptTempFromPsig(ref, targetPsig) {
+    let lo = ref.tMin, hi = ref.tMax;
+    for (let i = 0; i < 80; i++) {
+        const mid = (lo + hi) / 2;
+        const p   = ptSatPressure(ref, mid).psig;
+        if (p < targetPsig) lo = mid; else hi = mid;
+        if (hi - lo < 0.01) break;
+    }
+    return (lo + hi) / 2;
+}
+
+// ── Build chart data points ────────────────────────────────────────────────────
+function ptBuildCurve(ref, steps) {
+    const pts = [];
+    const step = (ref.tMax - ref.tMin) / steps;
+    for (let t = ref.tMin; t <= ref.tMax + 0.001; t += step) {
+        const { psig, kPa } = ptSatPressure(ref, t);
+        pts.push({ t, psig, kPa });
+    }
+    return pts;
+}
+
+// ── Canvas renderer ────────────────────────────────────────────────────────────
+let _ptCurve   = [];
+let _ptRef     = null;
+let _ptCrosshairX = -1;
+
+function renderPTChart() {
+    const key = document.getElementById('ptRefrigerantSelect').value;
+    const ref = PT_REFRIGERANTS[key];
+    if (!ref) return;
+    _ptRef = ref;
+
+    // Build curve
+    _ptCurve = ptBuildCurve(ref, 200);
+
+    // Axis bounds
+    const tMin  = ref.tMin;
+    const tMax  = ref.tMax;
+    const pMin  = Math.max(-15, Math.floor(_ptCurve[0].psig / 10) * 10);
+    const pMax  = Math.ceil(_ptCurve[_ptCurve.length - 1].psig / 50) * 50;
+
+    // Draw
+    drawPTCanvas(ref, _ptCurve, tMin, tMax, pMin, pMax, _ptCrosshairX);
+
+    // Render property flags
+    const flagsDiv = document.getElementById('ptFlags');
+    flagsDiv.innerHTML = ref.flags.map((f, i) =>
+        `<span class="pt-flag ${ref.flagClass[i] || ''}">${f}</span>`
+    ).join('');
+}
+
+function drawPTCanvas(ref, curve, tMin, tMax, pMin, pMax, crossX) {
+    const canvas = document.getElementById('ptCanvas');
+    const wrap   = document.getElementById('ptCanvasWrap');
+    // Set pixel size to match display width × 2 for retina
+    const dpr    = window.devicePixelRatio || 1;
+    const W      = wrap.clientWidth;
+    const H      = 300;
+    canvas.width  = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    const PAD = { top: 16, right: 12, bottom: 44, left: 56 };
+    const cW  = W - PAD.left - PAD.right;
+    const cH  = H - PAD.top  - PAD.bottom;
+
+    // Background
+    ctx.fillStyle = '#14171c';
+    ctx.fillRect(0, 0, W, H);
+
+    // Grid + axes
+    ctx.strokeStyle = '#3f4451';
+    ctx.lineWidth   = 0.5;
+
+    // Horizontal grid (pressure)
+    const pStep = pMax > 500 ? 100 : pMax > 200 ? 50 : 25;
+    for (let p = Math.ceil(pMin / pStep) * pStep; p <= pMax; p += pStep) {
+        const y = PAD.top + cH - ((p - pMin) / (pMax - pMin)) * cH;
+        ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + cW, y); ctx.stroke();
+        ctx.fillStyle = '#abb2bf'; ctx.font = `${10 * dpr / dpr}px sans-serif`;
+        ctx.textAlign = 'right'; ctx.fillText(p, PAD.left - 5, y + 3.5);
+    }
+
+    // Vertical grid (temperature)
+    const tStep = (tMax - tMin) > 150 ? 20 : 10;
+    for (let t = Math.ceil(tMin / tStep) * tStep; t <= tMax; t += tStep) {
+        const x = PAD.left + ((t - tMin) / (tMax - tMin)) * cW;
+        ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + cH); ctx.stroke();
+        ctx.fillStyle = '#abb2bf'; ctx.textAlign = 'center';
+        ctx.fillText(t + '°', x, PAD.top + cH + 14);
+    }
+
+    // Axis labels
+    ctx.fillStyle = '#abb2bf'; ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Temperature (°F)', PAD.left + cW / 2, H - 4);
+    ctx.save(); ctx.translate(12, PAD.top + cH / 2); ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Pressure (PSIG)', 0, 0); ctx.restore();
+
+    // Refrigerant name
+    ctx.fillStyle = '#ff6b00'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(ref.name + ' — Saturation Curve', PAD.left + 4, PAD.top + 12);
+
+    // Curve
+    ctx.beginPath();
+    ctx.strokeStyle = '#ff6b00';
+    ctx.lineWidth   = 2.5;
+    ctx.shadowColor = 'rgba(255,107,0,0.4)';
+    ctx.shadowBlur  = 6;
+    curve.forEach((pt, i) => {
+        const x = PAD.left + ((pt.t    - tMin) / (tMax - tMin)) * cW;
+        const y = PAD.top  + cH - ((pt.psig - pMin) / (pMax - pMin)) * cH;
+        if (pt.psig < pMin || pt.psig > pMax) return;
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Crosshair
+    if (crossX >= 0) {
+        const t    = tMin + (crossX / cW) * (tMax - tMin);
+        const { psig, kPa } = ptSatPressure(ref, t);
+        const cx   = PAD.left + crossX;
+        const cy   = PAD.top  + cH - ((psig - pMin) / (pMax - pMin)) * cH;
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+        ctx.lineWidth   = 1;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath(); ctx.moveTo(cx, PAD.top); ctx.lineTo(cx, PAD.top + cH); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(PAD.left, cy); ctx.lineTo(PAD.left + cW, cy); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Dot on curve
+        ctx.beginPath();
+        ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff6b00'; ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+
+        // Update readout
+        document.getElementById('ptReadTemp').textContent = t.toFixed(1) + ' °F';
+        document.getElementById('ptReadPsig').textContent = psig < -14 ? 'VAC' : psig.toFixed(1);
+        document.getElementById('ptReadKpa').textContent  = kPa.toFixed(1);
+    }
+
+    // Store axis info for interaction
+    canvas._ptMeta = { PAD, cW, cH, tMin, tMax, pMin, pMax };
+}
+
+// ── Touch / mouse interaction ──────────────────────────────────────────────────
+function ptHandleInteraction(e) {
+    e.preventDefault();
+    const canvas = document.getElementById('ptCanvas');
+    const meta   = canvas._ptMeta;
+    if (!meta || !_ptRef) return;
+
+    const rect   = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const rawX   = clientX - rect.left;
+    const cx     = Math.max(0, Math.min(rawX - meta.PAD.left, meta.cW));
+
+    _ptCrosshairX = cx;
+    drawPTCanvas(_ptRef, _ptCurve,
+        meta.tMin, meta.tMax, meta.pMin, meta.pMax, cx);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('ptCanvas');
+    canvas.addEventListener('mousemove',  ptHandleInteraction);
+    canvas.addEventListener('touchmove',  ptHandleInteraction, { passive: false });
+    canvas.addEventListener('touchstart', ptHandleInteraction, { passive: false });
+
+    // Initial render
+    renderPTChart();
+});
+
+// ── Quick lookup functions ─────────────────────────────────────────────────────
+function ptLookupFromTemp() {
+    const tF  = parseFloat(document.getElementById('ptLookupTemp').value);
+    const key = document.getElementById('ptRefrigerantSelect').value;
+    const ref = PT_REFRIGERANTS[key];
+    if (isNaN(tF) || !ref) return;
+    const { psig, kPa } = ptSatPressure(ref, tF);
+    document.getElementById('ptReadTemp').textContent = tF.toFixed(1) + ' °F';
+    document.getElementById('ptReadPsig').textContent = psig < -14 ? 'VAC' : psig.toFixed(1);
+    document.getElementById('ptReadKpa').textContent  = kPa.toFixed(1);
+    // Move crosshair to that temp
+    const meta = document.getElementById('ptCanvas')._ptMeta;
+    if (meta) {
+        _ptCrosshairX = ((tF - meta.tMin) / (meta.tMax - meta.tMin)) * meta.cW;
+        drawPTCanvas(ref, _ptCurve, meta.tMin, meta.tMax, meta.pMin, meta.pMax, _ptCrosshairX);
+    }
+}
+
+function ptLookupFromPressure() {
+    const psig = parseFloat(document.getElementById('ptLookupPsig').value);
+    const key  = document.getElementById('ptRefrigerantSelect').value;
+    const ref  = PT_REFRIGERANTS[key];
+    if (isNaN(psig) || !ref) return;
+    const tF   = ptTempFromPsig(ref, psig);
+    const kPa  = ptSatPressure(ref, tF).kPa;
+    document.getElementById('ptReadTemp').textContent = tF.toFixed(1) + ' °F';
+    document.getElementById('ptReadPsig').textContent = psig.toFixed(1);
+    document.getElementById('ptReadKpa').textContent  = kPa.toFixed(1);
+    const meta = document.getElementById('ptCanvas')._ptMeta;
+    if (meta) {
+        _ptCrosshairX = ((tF - meta.tMin) / (meta.tMax - meta.tMin)) * meta.cW;
+        drawPTCanvas(ref, _ptCurve, meta.tMin, meta.tMax, meta.pMin, meta.pMax, _ptCrosshairX);
+    }
+}
 function executeAllHvacMath() {
     // Read inputs
     const tF        = parseFloat(document.getElementById('dbTemp').value)    || 75;
