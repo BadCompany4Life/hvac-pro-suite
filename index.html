@@ -30,7 +30,7 @@
         .data-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.95rem; border-bottom: 1px dashed var(--border); }
         .data-row:last-child { border-bottom: none; }
         .val { font-weight: bold; color: var(--success); font-size: 1.15rem; }
-        .action-btn { background-color: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 1rem; letter-spacing: 0.5px; display: block; width: 100%; text-align: center; box-shadow: 0 4px 15px rgba(255,107,0,0.3); }
+        .action-btn { background-color: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 1rem; letter-spacing: 0.5px; display: block; text-align: center; box-shadow: 0 4px 15px rgba(255,107,0,0.3); }
         .code-box { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; background: var(--bg-main); padding: 12px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px; }
         .catalog-viewer { width: 100%; padding: 10px; background: var(--bg-input); color: #fff; border-radius: 4px; border: 1px solid var(--border); margin-top: 5px; font-size: 0.85rem; font-weight: bold; }
         .catalog-output { background: var(--bg-main); border: 1px dashed var(--primary); padding: 10px; border-radius: 4px; margin-top: 8px; font-size: 0.85rem; line-height: 1.4; display: none; color: var(--text-muted); }
@@ -48,11 +48,11 @@
     <div class="section-title">1. Psychrometrics Field Calculator</div>
     <div class="form-row">
         <label>Dry Bulb Temperature</label>
-        <div class="input-group"><input type="number" id="dbTemp" value="75"><span class="unit">°F</span></div>
+        <div class="input-group"><input type="number" id="dbTemp" value="75" oninput="executeSuiteEngineMain()"><span class="unit">°F</span></div>
     </div>
     <div class="form-row">
         <label>Relative Humidity</label>
-        <div class="input-group"><input type="number" id="rhPct" value="50"><span class="unit">% RH</span></div>
+        <div class="input-group"><input type="number" id="rhPct" value="50" oninput="executeSuiteEngineMain()"><span class="unit">% RH</span></div>
     </div>
     <div class="results-block">
         <div class="data-row"><span>Dew Point Target:</span><span class="val" id="resDewPoint">--</span></div>
@@ -64,11 +64,11 @@
     <div class="section-title">2. AC Load Tonnage Estimator</div>
     <div class="form-row">
         <label>Area Floor Space</label>
-        <div class="input-group"><input type="number" id="spaceSqFt" value="1500"><span class="unit">Sq Ft</span></div>
+        <div class="input-group"><input type="number" id="spaceSqFt" value="1500" oninput="executeSuiteEngineMain()"><span class="unit">Sq Ft</span></div>
     </div>
     <div class="form-row">
         <label>Facility Classification</label>
-        <select id="buildingType">
+        <select id="buildingType" onchange="executeSuiteEngineMain()">
             <option value="office">Commercial Office Space</option>
             <option value="industrial">Industrial Plant Floor</option>
             <option value="server">Data Center Hub</option>
@@ -77,7 +77,7 @@
     </div>
     <div class="form-row">
         <label>Insulation Efficiency Profile</label>
-        <select id="insulationProfile">
+        <select id="insulationProfile" onchange="executeSuiteEngineMain()">
             <option value="none">No Insulation (Bare Outer Shell)</option>
             <option value="walls_ceilings">Complete Insulation (Walls & Ceilings)</option>
             <option value="walls_only">Partial Insulation (Walls Only)</option>
@@ -93,11 +93,11 @@
     <div class="section-title">3. Ductulator Friction Sizer</div>
     <div class="form-row">
         <label>Required Airflow Volume</label>
-        <div class="input-group"><input type="number" id="ductCfm" value="1200"><span class="unit">CFM</span></div>
+        <div class="input-group"><input type="number" id="ductCfm" value="1200" oninput="executeSuiteEngineMain()"><span class="unit">CFM</span></div>
     </div>
     <div class="form-row">
         <label>Design Friction Rate</label>
-        <div class="input-group"><input type="number" id="friction" value="0.10" step="0.01"><span class="unit">in. wg</span></div>
+        <div class="input-group"><input type="number" id="friction" value="0.10" step="0.01" oninput="executeSuiteEngineMain()"><span class="unit">in. wg</span></div>
     </div>
     <div class="results-block">
         <div class="data-row"><span>Round Duct Diameter:</span><span class="val" id="resRoundDuct">--</span></div>
