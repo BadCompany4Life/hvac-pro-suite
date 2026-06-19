@@ -30,7 +30,7 @@
         .data-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.95rem; border-bottom: 1px dashed var(--border); }
         .data-row:last-child { border-bottom: none; }
         .val { font-weight: bold; color: var(--success); font-size: 1.15rem; }
-        .action-btn { background-color: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.5px; display: block; }
+        .action-btn { background-color: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.5px; display: block; width: 100%; text-align: center; }
         .action-btn:hover { background-color: #e05e00; }
         .code-box { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; background: var(--bg-main); padding: 12px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px; }
         .catalog-viewer { width: 100%; padding: 10px; background: var(--bg-input); color: #fff; border-radius: 4px; border: 1px solid var(--border); margin-top: 5px; font-size: 0.85rem; font-weight: bold; }
@@ -136,7 +136,6 @@
 </div>
 
 <script>
-// HARDCODED COMPLIANCE SPECIFICATION DATABASES
 const SMACNA_CATALOG = {
     ch1: "<b>SMACNA Chapter 1 - Material Specifications:</b><br>• For 2\" w.g. static pressure limits, minimum steel gauge for rectangular ducts up to 12\" wide is 26 Gauge.<br>• Ducts 13\" to 30\" wide require a minimum of 24 Gauge thickness structural sheet plates.<br>• Longitudinal seams must be structurally locked via Pittsburgh lock configurations or seam punch joins.",
     ch2: "<b>SMACNA Chapter 2 - Transverse Joint Connections:</b><br>• Flat drive slip connections are permitted for joints up to 20 inches wide at a 2\" w.g. maximum static pressure classification.<br>• T-25 companion flange configurations require 1/2\" bolt anchors at perimeter corner junctions.<br>• Integral flange joints (TDC/TDF specifications) must include matching perimeter gasket seals completely across interface edges.",
