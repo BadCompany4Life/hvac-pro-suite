@@ -33,7 +33,7 @@
         .data-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.95rem; border-bottom: 1px dashed var(--border); }
         .data-row:last-child { border-bottom: none; }
         .val { font-weight: bold; color: var(--success); font-size: 1.1rem; }
-        .action-btn { background-color: var(--primary); color: #html; color: white; border: none; padding: 14px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.5px; }
+        .action-btn { background-color: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.5px; }
         .action-btn:hover { background-color: #e05e00; }
         .code-box { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; background: var(--bg-main); padding: 10px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px; }
     </style>
@@ -51,11 +51,11 @@
     <div class="section-title">1. Psychrometrics Field Calculator</div>
     <div class="form-row">
         <label>Dry Bulb Temperature</label>
-        <div class="input-group"><input type="number" id="dbTemp" value="75"><span class="unit">°F</span></div>
+        <div class="input-group"><input type="number" id="dbTemp" value="75" oninput="runAllCalculations()"><span class="unit">°F</span></div>
     </div>
     <div class="form-row">
         <label>Relative Humidity</label>
-        <div class="input-group"><input type="number" id="rhPct" value="50"><span class="unit">% RH</span></div>
+        <div class="input-group"><input type="number" id="rhPct" value="50" oninput="runAllCalculations()"><span class="unit">% RH</span></div>
     </div>
     <div class="results-block">
         <div class="data-row"><span>Dew Point Target:</span><span class="val" id="resDewPoint">--</span></div>
@@ -67,11 +67,11 @@
     <div class="section-title">2. AC Load Tonnage Estimator</div>
     <div class="form-row">
         <label>Area Floor Space</label>
-        <div class="input-group"><input type="number" id="spaceSqFt" value="1500"><span class="unit">Sq Ft</span></div>
+        <div class="input-group"><input type="number" id="spaceSqFt" value="1500" oninput="runAllCalculations()"><span class="unit">Sq Ft</span></div>
     </div>
     <div class="form-row">
         <label>Facility Classification</label>
-        <select id="buildingType">
+        <select id="buildingType" onchange="runAllCalculations()">
             <option value="office">Commercial Office Space</option>
             <option value="industrial">Industrial Plant Floor</option>
             <option value="server">Data Center Hub</option>
@@ -88,9 +88,9 @@
     <div class="form-row" id="insulationBox" style="display: none;">
         <label>Envelope Options:</label>
         <div class="radio-group">
-            <label class="radio-label"><input type="radio" name="insType" value="walls_ceilings" checked> Walls and Ceilings</label>
-            <label class="radio-label"><input type="radio" name="insType" value="walls_only"> Walls Only</label>
-            <label class="radio-label"><input type="radio" name="insType" value="attic_only"> Attic / Ceiling Only</label>
+            <label class="radio-label"><input type="radio" name="insType" value="walls_ceilings" checked onchange="runAllCalculations()"> Walls and Ceilings</label>
+            <label class="radio-label"><input type="radio" name="insType" value="walls_only" onchange="runAllCalculations()"> Walls Only</label>
+            <label class="radio-label"><input type="radio" name="insType" value="attic_only" onchange="runAllCalculations()"> Attic / Ceiling Only</label>
         </div>
     </div>
     <div class="results-block">
@@ -102,11 +102,11 @@
     <div class="section-title">3. Ductulator Friction Sizer</div>
     <div class="form-row">
         <label>Required Airflow Volume</label>
-        <div class="input-group"><input type="number" id="ductCfm" value="1200"><span class="unit">CFM</span></div>
+        <div class="input-group"><input type="number" id="ductCfm" value="1200" oninput="runAllCalculations()"><span class="unit">CFM</span></div>
     </div>
     <div class="form-row">
         <label>Design Friction Rate</label>
-        <div class="input-group"><input type="number" id="friction" value="0.10" step="0.01"><span class="unit">in. wg</span></div>
+        <div class="input-group"><input type="number" id="friction" value="0.10" step="0.01" oninput="runAllCalculations()"><span class="unit">in. wg</span></div>
     </div>
     <div class="results-block">
         <div class="data-row"><span>Round Duct Diameter:</span><span class="val" id="resRoundDuct">--</span></div>
@@ -134,6 +134,7 @@ function toggleInsulationView() {
     const box = document.getElementById('insulationBox');
     const isIns = document.getElementById('isInsulated').value;
     box.style.display = (isIns === 'yes') ? 'block' : 'none';
+    runAllCalculations();
 }
 
 function runAllCalculations() {
@@ -170,9 +171,3 @@ function runAllCalculations() {
             } else {
                 const rad = document.querySelector('input[name="insType"]:checked');
                 if (rad) {
-                    if (rad.value === 'walls_only') mult = 1.15;
-                    if (rad.value === 'attic_only') mult = 1.25;
-                    if (rad.value === 'walls_ceilings') mult = 0.90;
-                }
-            }
-            let tons = (sqFt / base) * mult;
