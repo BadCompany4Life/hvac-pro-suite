@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProTech HVAC Field Tool Suite</title>
+    <title>ProTech HVAC Master Suite</title>
     <style>
         :root {
             --bg-main: #14171c;
@@ -105,7 +105,7 @@
         <div class="data-row"><span>Calculated Air Velocity:</span><span class="val" id="resVelocity">--</span></div>
     </div>
 
-    <!-- PURE INLINE ONCLICK INTERACTION MASTER TRIGGER BUTTON -->
+    <!-- MANUAL ENGINE INTERACTION BUTTON -->
     <button class="action-btn" onclick="executeAllHvacMath()">⚡ Run Calculations & Generate Report</button>
 
     <!-- REPORT LOG AREA -->
@@ -113,7 +113,7 @@
     <label>Hold your finger in the field below to copy data:</label>
     <textarea class="report-textarea" id="reportConsoleField" readonly>Click the orange execution button above to calculate values...</textarea>
 
-    <!-- MODULE 4: CATALOGS WITH RESTORED SMACNA CODE SETS -->
+    <!-- MODULE 4: CATALOGS -->
     <div class="section-title">4. Compliance Engineering Manuals</div>
     <div class="code-box">
         <b style="color:var(--primary)">📋 SMACNA Construction Standards Catalog</b>
@@ -139,6 +139,6 @@
 </div>
 
 <script>
-// Deep-nested manual databases
 const SMACNA_CHAPTERS = {
-    ch1: "<b>SMACNA Chapter 1 - Material Specifications:</b><br>• For 2\" w.g. static pressure limits, minimum steel gauge for rectangular ducts up to 12\" wide is 26 Gauge.<br>• Ducts 13\" to 30\" wide require a minimum of 24 Gauge thickness structural sheet plates.<br>• Longitudinal seams must be structurally locked via Pittsburgh lock configurations or seam punch joins.",
+    ch1: "<b>SMACNA Chapter 1 - Material Specifications:</b><br>• For 2\" w.g. static pressure limits, minimum steel gauge for rectangular ducts up to 12\" wide is 26 Gauge.<br>• Ducts 13\" to 30\" wide require a minimum of 24 Gauge thickness.<br>• Longitudinal seams must be Pittsburgh lock configurations.",
+    ch2: "<b>SMACNA Chapter 2 - Transverse Joint Connections:</b><br>• Flat drive slip connections are permitted for joints up to 20 inches wide at a 2\" w.g. maximum.<br>• Integral flange joints (TDC/TDF specifications) must include matching perimeter gasket seals.",
