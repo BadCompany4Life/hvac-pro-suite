@@ -30,8 +30,7 @@
         .data-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.95rem; border-bottom: 1px dashed var(--border); }
         .data-row:last-child { border-bottom: none; }
         .val { font-weight: bold; color: var(--success); font-size: 1.15rem; }
-        .action-btn { background-color: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 1rem; letter-spacing: 0.5px; display: block; text-align: center; box-shadow: 0 4px 15px rgba(255,107,0,0.3); }
-        .action-btn:hover { background-color: #e05e00; }
+        .action-btn { background-color: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 1rem; letter-spacing: 0.5px; display: block; width: 100%; text-align: center; box-shadow: 0 4px 15px rgba(255,107,0,0.3); }
         .code-box { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; background: var(--bg-main); padding: 12px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px; }
         .catalog-viewer { width: 100%; padding: 10px; background: var(--bg-input); color: #fff; border-radius: 4px; border: 1px solid var(--border); margin-top: 5px; font-size: 0.85rem; font-weight: bold; }
         .catalog-output { background: var(--bg-main); border: 1px dashed var(--primary); padding: 10px; border-radius: 4px; margin-top: 8px; font-size: 0.85rem; line-height: 1.4; display: none; color: var(--text-muted); }
@@ -45,7 +44,7 @@
         <h1>ProTech <span>HVAC Master Suite</span></h1>
     </header>
 
-    <!-- MODULE 1 -->
+    <!-- MODULE 1 INPUTS -->
     <div class="section-title">1. Psychrometrics Field Calculator</div>
     <div class="form-row">
         <label>Dry Bulb Temperature</label>
@@ -61,7 +60,7 @@
         <div class="data-row"><span>Vapor Pressure:</span><span class="val" id="resVapor">--</span></div>
     </div>
 
-    <!-- MODULE 2 -->
+    <!-- MODULE 2 INPUTS -->
     <div class="section-title">2. AC Load Tonnage Estimator</div>
     <div class="form-row">
         <label>Area Floor Space</label>
@@ -90,7 +89,7 @@
         <div class="data-row"><span>Target Airflow Volume:</span><span class="val" id="resCfm">--</span></div>
     </div>
 
-    <!-- MODULE 3 -->
+    <!-- MODULE 3 INPUTS -->
     <div class="section-title">3. Ductulator Friction Sizer</div>
     <div class="form-row">
         <label>Required Airflow Volume</label>
@@ -106,17 +105,16 @@
         <div class="data-row"><span>Calculated Air Velocity:</span><span class="val" id="resVelocity">--</span></div>
     </div>
 
-    <!-- MAIN CONTROL BUTTON -->
-    <button class="action-btn" onclick="executeSuiteEngine()">⚡ Compute Systems & Generate Report</button>
+    <!-- MAIN ENGINE MASTER TRIGGER INTERACTION BUTTON -->
+    <button class="action-btn" onclick="executeSuiteEngineMain()">⚡ Run Calculations & Generate Report</button>
 
-    <!-- EXPORT CONSOLE VIEW -->
-    <div class="section-title">📥 Live Export Console</div>
-    <label>Copy text below into Samsung Notes or Word:</label>
-    <textarea class="report-textarea" id="reportConsoleField" readonly>Your system calculations report will appear here...</textarea>
+    <!-- REPORT LOG AREA FIELD FOR TEXT COPYING -->
+    <div class="section-title">📥 Field Export Report Summary</div>
+    <label>Hold your finger in the field below to copy data directly into Samsung Notes or Word:</label>
+    <textarea class="report-textarea" id="reportConsoleField" readonly>The system report data metrics text logs will appear inside here...</textarea>
 
-    <!-- MODULE 4: INTERACTIVE CATALOG SYSTEM -->
+    <!-- MODULE 4: ENGINEERING CATALOGS -->
     <div class="section-title">4. Compliance Engineering Manuals</div>
-    
     <div class="code-box">
         <b style="color:var(--primary)">📋 SMACNA Construction Standards Catalog</b>
         <select class="catalog-viewer" id="smacnaCatalogSelect" onchange="viewSmacnaChapter()">
@@ -128,7 +126,6 @@
         </select>
         <div class="catalog-output" id="smacnaOutputBox"></div>
     </div>
-
     <div class="code-box">
         <b style="color:var(--primary)">☀️ California Title 24 Mechanical Code Catalog</b>
         <select class="catalog-viewer" id="title24CatalogSelect" onchange="viewTitle24Chapter()">
