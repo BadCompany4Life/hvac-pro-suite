@@ -9,7 +9,7 @@
             --bg-main: #14171c;
             --bg-card: #1e222b;
             --bg-input: #282c34;
-            --primary: #ff6b00; 
+            --primary: #ff6b00;
             --text-main: #ffffff;
             --text-muted: #abb2bf;
             --border: #3f4451;
@@ -25,16 +25,17 @@
         label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; color: var(--text-muted); }
         .input-group { position: relative; display: flex; }
         input[type="number"], select { width: 100%; padding: 12px; background-color: var(--bg-input); border: 1px solid var(--border); border-radius: 4px; color: var(--text-main); font-size: 1.1rem; font-weight: bold; }
-        .unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-weight: bold; font-size: 0.9rem; }
+        .unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--primary); font-weight: bold; font-size: 0.9rem; pointer-events: none; }
         .results-block { background-color: var(--bg-main); border-radius: 6px; padding: 15px; margin-top: 10px; border: 1px solid var(--border); }
         .data-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.95rem; border-bottom: 1px dashed var(--border); }
         .data-row:last-child { border-bottom: none; }
         .val { font-weight: bold; color: var(--success); font-size: 1.15rem; }
         .action-btn { background-color: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 1rem; letter-spacing: 0.5px; display: block; text-align: center; box-shadow: 0 4px 15px rgba(255,107,0,0.3); }
+        .action-btn:active { opacity: 0.85; transform: scale(0.99); }
         .code-box { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; background: var(--bg-main); padding: 12px; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 10px; }
         .catalog-viewer { width: 100%; padding: 10px; background: var(--bg-input); color: white; border-radius: 4px; border: 1px solid var(--border); margin-top: 5px; font-size: 0.85rem; font-weight: bold; }
-        .catalog-output { background: var(--bg-main); border: 1px dashed var(--primary); padding: 10px; border-radius: 4px; margin-top: 8px; font-size: 0.85rem; line-height: 1.4; display: none; color: var(--text-muted); }
-        .report-textarea { width: 100%; height: 200px; background-color: var(--bg-main); color: var(--success); border: 1px solid var(--border); padding: 12px; border-radius: 4px; font-family: monospace; font-size: 0.85rem; margin-top: 10px; display: block; resize: none; }
+        .catalog-output { background: var(--bg-main); border: 1px dashed var(--primary); padding: 10px; border-radius: 4px; margin-top: 8px; font-size: 0.85rem; line-height: 1.6; display: none; color: var(--text-muted); }
+        .report-textarea { width: 100%; height: 220px; background-color: var(--bg-main); color: var(--success); border: 1px solid var(--border); padding: 12px; border-radius: 4px; font-family: monospace; font-size: 0.82rem; margin-top: 10px; display: block; resize: none; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -44,7 +45,7 @@
         <h1>ProTech <span>HVAC Master Suite</span></h1>
     </header>
 
-    <!-- MODULE 1 INPUTS -->
+    <!-- MODULE 1: PSYCHROMETRICS -->
     <div class="section-title">1. Psychrometrics Field Calculator</div>
     <div class="form-row">
         <label>Dry Bulb Temperature</label>
@@ -60,7 +61,7 @@
         <div class="data-row"><span>Vapor Pressure:</span><span class="val" id="resVapor">--</span></div>
     </div>
 
-    <!-- MODULE 2 INPUTS -->
+    <!-- MODULE 2: TONNAGE -->
     <div class="section-title">2. AC Load Tonnage Estimator</div>
     <div class="form-row">
         <label>Area Floor Space</label>
@@ -89,7 +90,7 @@
         <div class="data-row"><span>Target Airflow Volume:</span><span class="val" id="resCfm">--</span></div>
     </div>
 
-    <!-- MODULE 3 INPUTS -->
+    <!-- MODULE 3: DUCTULATOR -->
     <div class="section-title">3. Ductulator Friction Sizer</div>
     <div class="form-row">
         <label>Required Airflow Volume</label>
@@ -105,13 +106,13 @@
         <div class="data-row"><span>Calculated Air Velocity:</span><span class="val" id="resVelocity">--</span></div>
     </div>
 
-    <!-- MAIN ENGINE MASTER TRIGGER INTERACTION BUTTON -->
+    <!-- CALCULATE BUTTON -->
     <button class="action-btn" onclick="executeAllHvacMath()">⚡ Run Calculations & Generate Report</button>
 
-    <!-- REPORT LOG AREA -->
+    <!-- REPORT EXPORT -->
     <div class="section-title">📥 Field Export Report Summary</div>
     <label>Hold your finger in the field below to copy data:</label>
-    <textarea class="report-textarea" id="reportConsoleField" readonly>Click the orange execution button above to calculate values...</textarea>
+    <textarea class="report-textarea" id="reportConsoleField" readonly>Tap the orange button above to run all calculations...</textarea>
 
     <!-- MODULE 4: CATALOGS -->
     <div class="section-title">4. Compliance Engineering Manuals</div>
@@ -121,6 +122,8 @@
             <option value="">-- Choose Standard Specification Sub-Section --</option>
             <option value="ch1">Chapter 1: Metal Duct Thickness and Pressure Joint Matrices</option>
             <option value="ch2">Chapter 2: Transverse Joint Reinforcements (T-24 Drives / TDC/TDF)</option>
+            <option value="ch4">Chapter 4: Flexible Duct Structural Installation & Constraint Caps</option>
+            <option value="ch5">Chapter 5: Hanger Support Spacing & Structural Rod Specifications</option>
         </select>
         <div class="catalog-output" id="smacnaOutputBox"></div>
     </div>
@@ -130,29 +133,238 @@
             <option value="">-- Choose Code Compliance Sub-Section --</option>
             <option value="sec120">Section 120.1: Ventilation Requirements for High-Rise and Commercial Spaces</option>
             <option value="sec120_4">Section 120.4: Mandatory Architectural Duct Insulation (R-Value Matrices)</option>
+            <option value="sec150">Section 150.0: Low-Rise Residential HERS Verified Air Distribution Caps</option>
         </select>
         <div class="catalog-output" id="title24OutputBox"></div>
     </div>
 </div>
 
 <script>
+
+// ─── MODULE 4 DATA: SMACNA CATALOG ───────────────────────────────────────────
 const SMACNA_CHAPTERS = {
-    ch1: "<b>SMACNA Chapter 1:</b> 26 Ga. minimum for rectangular ducts up to 12\" wide. 24 Ga. minimum for 13\" to 30\" wide.",
-    ch2: "<b>SMACNA Chapter 2:</b> Flat slip joins allowed up to 20\" wide. TDC/TDF joints require matching gasket corner seals."
+    ch1: "<b>SMACNA Ch.1 — Metal Duct Gauge & Pressure:</b><br>" +
+         "• ≤2\" w.g. static: 26 Ga. min for duct widths up to 12\".<br>" +
+         "• 13\"–30\" wide: 24 Ga. minimum structural sheet.<br>" +
+         "• 31\"–60\" wide: 22 Ga. minimum required.<br>" +
+         "• Longitudinal seams: Pittsburgh lock or snap lock with seam punch.",
+
+    ch2: "<b>SMACNA Ch.2 — Transverse Joint Connections:</b><br>" +
+         "• Flat drive slip joints permitted up to 20\" wide at ≤2\" w.g.<br>" +
+         "• Standing drive slip: up to 30\" wide at ≤1\" w.g.<br>" +
+         "• TDC/TDF integral flange joints require corner clips and perimeter gasket seals at all four corners.<br>" +
+         "• Duct sealant required on all pressure-class joints Class A or higher.",
+
+    ch4: "<b>SMACNA Ch.4 — Flexible Duct Installation:</b><br>" +
+         "• Maximum unsupported span: 4 ft. between hangers.<br>" +
+         "• Maximum length per run: 14 ft. total flex without a hard connection intermediate.<br>" +
+         "• Inner liner must remain fully extended — no more than 4\" of compression per 4 ft. run.<br>" +
+         "• Bends must maintain centerline radius ≥ 1× duct diameter.",
+
+    ch5: "<b>SMACNA Ch.5 — Hanger Support Specifications:</b><br>" +
+         "• Rectangular ducts up to 18\" wide: trapeze or clevis hanger max 8 ft. O.C.<br>" +
+         "• Ducts 19\"–60\" wide: max 6 ft. O.C. with min. 3/8\" threaded rod.<br>" +
+         "• Ducts over 60\": engineer-stamped support design required.<br>" +
+         "• Round duct hangers: band or clevis type, min 1/2\" rod for ducts ≥18\" diameter."
 };
 
-const TITLE24_CHAPTERS = {
-    sec120: "<b>Title 24 Sec 120.1:</b> Commercial interiors require minimum fresh air supply tracking at 15 CFM per active occupant.",
-    sec120_4: "<b>Title 24 Sec 120.4:</b> Conditioned space duct installations outdoors require R-8.0 minimum insulation thickness."
+// ─── MODULE 4 DATA: TITLE 24 CATALOG ─────────────────────────────────────────
+const TITLE24_SECTIONS = {
+    sec120: "<b>Title 24 §120.1 — Ventilation (Commercial):</b><br>" +
+            "• Minimum outdoor air: 15 CFM per occupant for office/commercial spaces.<br>" +
+            "• High-rise residential corridors: 0.15 CFM/sq.ft. minimum continuous ventilation.<br>" +
+            "• CO₂ demand-controlled ventilation required in spaces with occupant load ≥25 persons per 1,000 sq.ft.<br>" +
+            "• Recirculated air must pass MERV-13 or equivalent filtration in health-care-adjacent zones.",
+
+    sec120_4: "<b>Title 24 §120.4 — Duct Insulation (Commercial):</b><br>" +
+              "• Supply and return ducts in unconditioned attic space: R-8.0 minimum.<br>" +
+              "• Ducts in conditioned space: R-4.2 minimum.<br>" +
+              "• Ducts through exterior walls or roof assemblies: R-12.0 required.<br>" +
+              "• Insulation must be continuous — no breaks at supports or fittings.",
+
+    sec150: "<b>Title 24 §150.0 — Residential Air Distribution (HERS):</b><br>" +
+            "• Total duct leakage: ≤5% of system airflow (HERS verified).<br>" +
+            "• Leakage to outside: ≤6% for existing duct alterations; ≤4% new construction.<br>" +
+            "• Air handler location: if in garage, requires sealed plenum and CO isolation.<br>" +
+            "• Refrigerant charge and airflow must be HERS-tested for systems ≥2 tons."
 };
 
+// ─── CATALOG DISPLAY FUNCTIONS ────────────────────────────────────────────────
 function viewSmacnaChapterInline() {
     const val = document.getElementById('smacnaCatalogSelect').value;
     const box = document.getElementById('smacnaOutputBox');
-    if(val && SMACNA_CHAPTERS[val]) { box.innerHTML = SMACNA_CHAPTERS[val]; box.style.display = "block"; } 
-    else { box.style.display = "none"; }
+    if (val && SMACNA_CHAPTERS[val]) {
+        box.innerHTML = SMACNA_CHAPTERS[val];
+        box.style.display = "block";
+    } else {
+        box.style.display = "none";
+    }
 }
 
 function viewTitle24ChapterInline() {
     const val = document.getElementById('title24CatalogSelect').value;
     const box = document.getElementById('title24OutputBox');
+    if (val && TITLE24_SECTIONS[val]) {
+        box.innerHTML = TITLE24_SECTIONS[val];
+        box.style.display = "block";
+    } else {
+        box.style.display = "none";
+    }
+}
+
+// ─── MODULE 1: PSYCHROMETRICS ─────────────────────────────────────────────────
+// Magnus formula (Lawrence, 2005) — accurate to ±0.35°C over 0–60°C range
+function calcPsychrometrics(tF, rhPct) {
+    // Convert °F → °C
+    const tC = (tF - 32) * 5 / 9;
+    const rh = rhPct / 100;
+
+    // Saturation vapor pressure (Buck equation, kPa)
+    const es = 0.61121 * Math.exp((18.678 - tC / 234.5) * (tC / (257.14 + tC)));
+
+    // Actual vapor pressure
+    const ea = rh * es; // kPa
+
+    // Dew point via Magnus inversion
+    const lnEa = Math.log(ea / 0.61121);
+    const dpC = (257.14 * lnEa) / (18.678 - lnEa);
+    const dpF = dpC * 9 / 5 + 32;
+
+    // Humidity ratio (lb water / lb dry air)
+    const W = 0.62198 * (ea / (101.325 - ea));
+
+    // Grains of moisture per pound of dry air (1 lb = 7000 grains)
+    const grains = W * 7000;
+
+    return {
+        dewPoint: dpF.toFixed(1) + " °F",
+        grains:   grains.toFixed(1) + " gr/lb",
+        vapor:    (ea * 0.2953).toFixed(4) + " in. Hg"  // kPa → in. Hg
+    };
+}
+
+// ─── MODULE 2: TONNAGE ESTIMATOR ─────────────────────────────────────────────
+// Base BTU/hr/sq.ft. by building type, adjusted by insulation factor
+function calcTonnage(sqft, buildingType, insulationProfile) {
+    // Base heat gain factors (BTU/hr per sq.ft.)
+    const baseFactors = {
+        residential: 25,
+        office:      35,
+        industrial:  55,
+        server:      150   // Data centers run very high sensible loads
+    };
+
+    // Insulation multipliers (penalty for poor insulation)
+    const insulMult = {
+        walls_ceilings: 1.00,  // Best case — full envelope
+        attic_only:     1.15,  // Walls exposed
+        walls_only:     1.20,  // Attic/roof exposed
+        none:           1.45   // Bare shell — significant penalty
+    };
+
+    const btuh = sqft * (baseFactors[buildingType] || 30) * (insulMult[insulationProfile] || 1.0);
+    const tons  = btuh / 12000;
+    // Rule of thumb: 400 CFM per ton
+    const cfm   = tons * 400;
+
+    return {
+        tons: tons.toFixed(2) + " Tons",
+        cfm:  Math.round(cfm) + " CFM"
+    };
+}
+
+// ─── MODULE 3: DUCT SIZER ─────────────────────────────────────────────────────
+// ASHRAE / SMACNA equal-friction method
+// D = (0.0290 * Q^0.4783 / f^0.2052) — Huebscher formula (Q in CFM, f in in.wg/100ft)
+function calcDuct(cfm, frictionPer100ft) {
+    // Convert friction rate from in.wg/ft to in.wg per 100 ft
+    const f100 = frictionPer100ft * 100;
+
+    // Huebscher formula for round duct diameter (inches)
+    const D = 0.0290 * Math.pow(cfm, 0.4783) / Math.pow(f100 / 100, 0.2052);
+    const roundDiam = D;
+
+    // Velocity = CFM / Area (sq.ft.)
+    const areaSqFt = Math.PI * Math.pow(roundDiam / 24, 2); // radius in ft
+    const velocity = cfm / areaSqFt;
+
+    // Rectangular equivalent for fixed height H = 10"
+    // From ASHRAE: W = (D^2.1878 / H^0.625)^(1/1.5625) — simplified form
+    const H = 10;
+    const W = Math.pow(Math.pow(D, 2.1878) / Math.pow(H, 0.625), 1 / 1.5625);
+
+    return {
+        roundDuct: roundDiam.toFixed(1) + '"  Ø',
+        rectDuct:  Math.ceil(W) + '" W × 10" H',
+        velocity:  Math.round(velocity) + " FPM"
+    };
+}
+
+// ─── MASTER EXECUTION FUNCTION ────────────────────────────────────────────────
+function executeAllHvacMath() {
+    // Read inputs
+    const tF        = parseFloat(document.getElementById('dbTemp').value)    || 75;
+    const rh        = parseFloat(document.getElementById('rhPct').value)     || 50;
+    const sqft      = parseFloat(document.getElementById('spaceSqFt').value) || 1500;
+    const bldgType  = document.getElementById('buildingType').value;
+    const insulProf = document.getElementById('insulationProfile').value;
+    const ductCfm   = parseFloat(document.getElementById('ductCfm').value)   || 1200;
+    const friction  = parseFloat(document.getElementById('friction').value)  || 0.10;
+
+    // Run all three modules
+    const psych = calcPsychrometrics(tF, rh);
+    const load  = calcTonnage(sqft, bldgType, insulProf);
+    const duct  = calcDuct(ductCfm, friction);
+
+    // Populate Module 1 results
+    document.getElementById('resDewPoint').textContent = psych.dewPoint;
+    document.getElementById('resGrains').textContent   = psych.grains;
+    document.getElementById('resVapor').textContent    = psych.vapor;
+
+    // Populate Module 2 results
+    document.getElementById('resTons').textContent = load.tons;
+    document.getElementById('resCfm').textContent  = load.cfm;
+
+    // Populate Module 3 results
+    document.getElementById('resRoundDuct').textContent = duct.roundDuct;
+    document.getElementById('resRectDuct').textContent  = duct.rectDuct;
+    document.getElementById('resVelocity').textContent  = duct.velocity;
+
+    // Generate field report
+    const now = new Date();
+    const ts  = now.toLocaleDateString('en-US') + "  " + now.toLocaleTimeString('en-US');
+
+    const report =
+`========================================
+  PROTECH HVAC — FIELD CALCULATION LOG
+  Generated: ${ts}
+========================================
+
+[MODULE 1] PSYCHROMETRICS
+  Input:  ${tF}°F DB  /  ${rh}% RH
+  Dew Point:        ${psych.dewPoint}
+  Moisture Content: ${psych.grains}
+  Vapor Pressure:   ${psych.vapor}
+
+[MODULE 2] TONNAGE ESTIMATOR
+  Input:  ${sqft} sq.ft.  |  ${bldgType}  |  insul: ${insulProf}
+  Cooling Load:     ${load.tons}
+  Design Airflow:   ${load.cfm}
+
+[MODULE 3] DUCT SIZER
+  Input:  ${ductCfm} CFM  |  ${friction} in.wg/ft friction
+  Round Duct:       ${duct.roundDuct}
+  Rectangular:      ${duct.rectDuct}
+  Air Velocity:     ${duct.velocity}
+
+========================================
+  * For reference use only. Verify all
+    values against local codes & ASHRAE.
+========================================`;
+
+    document.getElementById('reportConsoleField').value = report;
+}
+
+</script>
+</body>
+</html>
